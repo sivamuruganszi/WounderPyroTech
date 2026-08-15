@@ -439,7 +439,7 @@ const DEFAULT_SEED = [
 // ---------- Firestore data access ----------
 async function seedIfEmpty(){
   const snap = await db.collection('products').limit(1).get();
-  if(!snap.empty) return;
+  if(!snap.empty) return false;
   const batch = db.batch();
   for(const item of DEFAULT_SEED){
     const ref = db.collection('products').doc();
@@ -450,11 +450,11 @@ async function seedIfEmpty(){
     });
   }
   await batch.commit();
+  return true;
 }
 async function loadProducts(){
   if(CONFIG_IS_PLACEHOLDER){ PRODUCTS = []; return; }
   try{
-    await seedIfEmpty();
     const snap = await db.collection('products').orderBy('code').get();
     PRODUCTS = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   }catch(e){
@@ -739,6 +739,12 @@ function renderAdminBody(){
       </div>
       <div>
         <h3 style="font-size:15px; margin:0 0 12px;">Live catalog (${PRODUCTS.length})</h3>
+        ${PRODUCTS.length === 0 ? `
+          <div style="background:#fff3cf; border:1px solid var(--gold); border-radius:10px; padding:14px; margin-bottom:14px; font-size:13px; color:#6b5100;">
+            The backend has no products yet. Click below to load the starter catalog (76 items from the 2026 price list) into Firestore.
+            <button id="seedCatalogBtn" class="submit-btn" style="margin-top:10px;">Load starter catalog (76 items)</button>
+            <div id="seedMsg"></div>
+          </div>` : ''}
         <div style="max-height:520px; overflow-y:auto; border:1px solid var(--line); border-radius:10px; padding:4px 10px;">
           ${PRODUCTS.slice().reverse().map(p=>`
             <div class="prod-row">
@@ -751,6 +757,8 @@ function renderAdminBody(){
     </div>`;
     setupImageUpload();
     document.getElementById('productForm').addEventListener('submit', handleProductSubmit);
+    const seedBtn = document.getElementById('seedCatalogBtn');
+    if(seedBtn) seedBtn.addEventListener('click', handleSeedClick);
   } else {
     body.innerHTML = `<div class="loading-row">Loading orders…</div>`;
     loadOrdersFromBackend().then(orders=>{
@@ -843,6 +851,27 @@ async function handleProductSubmit(e){
     msg.innerHTML = `<div class="error-box">Save failed (${err.code||err.message}). Check you're signed in and Firestore rules allow writes.</div>`;
   }
   btn.disabled = false; btn.textContent = 'Save product to backend';
+}
+
+async function handleSeedClick(){
+  const btn = document.getElementById('seedCatalogBtn');
+  const msg = document.getElementById('seedMsg');
+  btn.disabled = true; btn.textContent = 'Loading…';
+  try{
+    const seeded = await seedIfEmpty();
+    if(!seeded){
+      msg.innerHTML = `<div class="error-box" style="margin-top:8px;">Products already exist in the backend — nothing to seed.</div>`;
+    } else {
+      await loadProducts();
+      renderCatalog(); renderCatNav(); renderAdminBody();
+      toast('Starter catalog loaded ✓');
+      return;
+    }
+  }catch(err){
+    console.error(err);
+    msg.innerHTML = `<div class="error-box" style="margin-top:8px;">Could not load the catalog (${err.code||err.message}). Make sure Firestore rules allow authenticated writes.</div>`;
+  }
+  btn.disabled = false; btn.textContent = 'Load starter catalog (76 items)';
 }
 
 async function deleteProduct(id){
