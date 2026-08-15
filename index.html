@@ -3,249 +3,195 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spark & Ember Fireworks — Wholesale Crackers</title>
+<title>Wonder Pyro Tech — Price List 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700;900&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700;900&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-0:#0f0c1a;
-    --bg-1:#181330;
-    --bg-2:#221b42;
-    --card:#1d1738;
-    --ink:#f4efe4;
-    --ink-dim:#c9c2dd;
-    --ink-faint:#8d84ab;
-    --gold:#f5a623;
-    --gold-2:#ffd27a;
-    --magenta:#ff4d6d;
-    --teal:#37c7b3;
-    --line:rgba(244,239,228,0.1);
+    --navy:#170f2e;
+    --navy-2:#2a1552;
+    --cream:#fffaf0;
+    --card:#ffffff;
+    --red:#e2231a;
+    --red-dark:#b81d16;
+    --green:#1a9c4a;
+    --green-dark:#10692f;
+    --magenta:#8e1a6b;
+    --magenta-2:#c22a95;
+    --gold:#f7c948;
+    --gold-2:#ffe27a;
+    --ink:#1a2a6c;
+    --pink:#d6127a;
+    --line:#f0d9a8;
+    --shadow:0 14px 32px rgba(60,10,50,0.18);
     --radius:14px;
-    --shadow:0 12px 30px rgba(0,0,0,0.45);
   }
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
   body{
-    margin:0;
-    background:
-      radial-gradient(ellipse at 20% -10%, #2c2153 0%, transparent 55%),
-      radial-gradient(ellipse at 90% 0%, #3a1e3d 0%, transparent 45%),
-      var(--bg-0);
-    color:var(--ink);
-    font-family:'Work Sans', sans-serif;
-    -webkit-font-smoothing:antialiased;
+    margin:0; background:var(--cream); color:var(--ink);
+    font-family:'Work Sans', sans-serif; -webkit-font-smoothing:antialiased;
   }
   h1,h2,h3,.display{font-family:'Fraunces', serif;}
-  a{color:inherit;}
-  img{max-width:100%;display:block;}
-  button{font-family:inherit;cursor:pointer;}
-  ::selection{background:var(--gold);color:#1a1330;}
+  a{color:inherit;} img{max-width:100%;display:block;} button{font-family:inherit;cursor:pointer;}
+  ::selection{background:var(--gold); color:#241505;}
 
-  .stars{
-    position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.5;
-    background-image:
-      radial-gradient(1.5px 1.5px at 20px 30px, #fff 100%, transparent),
-      radial-gradient(1px 1px at 90px 80px, #fff 100%, transparent),
-      radial-gradient(1.5px 1.5px at 160px 40px, #fff 100%, transparent),
-      radial-gradient(1px 1px at 230px 120px, #fff 100%, transparent),
-      radial-gradient(1.5px 1.5px at 300px 60px, #fff 100%, transparent);
-    background-repeat:repeat; background-size:340px 200px;
-  }
-
+  /* ---------- header ---------- */
   header.topbar{
-    position:sticky; top:0; z-index:40;
-    background:rgba(15,12,26,0.88); backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:40; background:var(--navy);
+    border-bottom:3px solid var(--gold);
   }
-  .topbar-inner{
-    max-width:1180px; margin:0 auto; padding:14px 22px;
-    display:flex; align-items:center; justify-content:space-between; gap:18px;
-  }
+  .topbar-inner{max-width:1200px; margin:0 auto; padding:12px 22px; display:flex; align-items:center; justify-content:space-between; gap:18px;}
   .brand{display:flex; align-items:center; gap:10px;}
   .brand-mark{
-    width:38px;height:38px;border-radius:10px;
-    background:conic-gradient(from 180deg, var(--gold), var(--magenta), var(--teal), var(--gold));
-    display:flex;align-items:center;justify-content:center;font-size:18px;
+    width:40px;height:40px;border-radius:10px;
+    background:conic-gradient(from 180deg, var(--gold), var(--red), var(--magenta-2), var(--gold));
+    display:flex;align-items:center;justify-content:center;font-size:19px;
   }
-  .brand-name{font-size:19px; font-weight:700; letter-spacing:.2px;}
+  .brand-name{font-size:19px; font-weight:800; letter-spacing:.2px; color:#fff;}
   .brand-name span{color:var(--gold);}
-  nav.mainnav{display:flex; gap:22px; font-size:14px; color:var(--ink-dim);}
+  nav.mainnav{display:flex; gap:22px; font-size:14px; color:#e6def0;}
   nav.mainnav a{text-decoration:none; padding:6px 0; border-bottom:2px solid transparent; transition:.2s;}
   nav.mainnav a:hover{color:var(--gold); border-color:var(--gold);}
   .topbar-actions{display:flex; align-items:center; gap:14px;}
-  .call-chip{
-    display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-dim);
-    border:1px solid var(--line); padding:7px 12px; border-radius:999px;
-  }
-  .call-chip b{color:var(--gold-2); font-weight:600;}
+  .call-chip{display:flex; align-items:center; gap:8px; font-size:13px; color:#f3ecff; border:1px solid rgba(255,255,255,.2); padding:7px 12px; border-radius:999px;}
+  .call-chip b{color:var(--gold-2); font-weight:700;}
   .cart-btn{
     position:relative; background:var(--gold); color:#241505; border:none;
-    padding:9px 16px; border-radius:999px; font-weight:700; font-size:14px;
-    display:flex; align-items:center; gap:8px;
+    padding:9px 16px; border-radius:999px; font-weight:800; font-size:14px; display:flex; align-items:center; gap:8px;
   }
-  .cart-badge{
-    position:absolute; top:-7px; right:-7px; background:var(--magenta); color:#fff;
-    font-size:11px; min-width:19px; height:19px; border-radius:999px;
-    display:flex; align-items:center; justify-content:center; font-weight:700;
-  }
+  .cart-badge{position:absolute; top:-7px; right:-7px; background:var(--red); color:#fff; font-size:11px; min-width:19px; height:19px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-weight:700;}
 
-  .hero{position:relative; overflow:hidden; z-index:1;}
-  .hero-inner{
-    max-width:1180px; margin:0 auto; padding:64px 22px 48px;
-    display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center;
-  }
-  .eyebrow{
-    display:inline-flex; align-items:center; gap:8px; font-size:12.5px; letter-spacing:1.6px;
-    text-transform:uppercase; color:var(--gold-2); font-weight:600; margin-bottom:16px;
-  }
+  /* ---------- hero (cover-page style) ---------- */
+  .hero{position:relative; overflow:hidden; background:
+      radial-gradient(ellipse at 15% -10%, #3a1e66 0%, transparent 55%),
+      radial-gradient(ellipse at 90% 10%, #4a1440 0%, transparent 45%), var(--navy); color:#fff;}
+  .hero-inner{max-width:1200px; margin:0 auto; padding:56px 22px 40px; display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center;}
+  .eyebrow{display:inline-flex; align-items:center; gap:8px; font-size:12.5px; letter-spacing:1.6px; text-transform:uppercase; color:var(--gold-2); font-weight:700; margin-bottom:14px;}
   .eyebrow::before{content:"✦";}
-  .hero h1{font-size:46px; line-height:1.08; margin:0 0 18px; font-weight:700;}
-  .hero h1 em{font-style:normal; background:linear-gradient(180deg, var(--gold-2), var(--gold)); -webkit-background-clip:text; background-clip:text; color:transparent;}
-  .hero p.lede{color:var(--ink-dim); font-size:16.5px; max-width:480px; line-height:1.6; margin:0 0 26px;}
-  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap;}
-  .btn-primary{
-    background:var(--magenta); color:#fff; border:none; padding:13px 24px; border-radius:999px;
-    font-weight:700; font-size:14.5px; box-shadow:0 10px 24px rgba(255,77,109,.35);
-  }
-  .btn-ghost{
-    background:transparent; color:var(--ink); border:1px solid var(--line); padding:13px 22px; border-radius:999px;
-    font-weight:600; font-size:14.5px;
-  }
-  .hero-stats{display:flex; gap:28px; margin-top:34px;}
-  .hero-stats div b{display:block; font-size:22px; font-family:'Fraunces',serif; color:var(--gold-2);}
-  .hero-stats div span{font-size:12px; color:var(--ink-faint);}
+  .hero h1{font-size:44px; line-height:1.06; margin:0 0 8px; font-weight:900;}
+  .hero h1 .wonder{background:linear-gradient(180deg, var(--gold-2), var(--gold)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .hero .sub{font-size:19px; color:#d8ccef; margin:0 0 20px; font-weight:600;}
+  .hero p.lede{color:#c9bfe0; font-size:15.5px; max-width:480px; line-height:1.6; margin:0 0 22px;}
+  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:26px;}
+  .btn-primary{background:var(--red); color:#fff; border:none; padding:13px 24px; border-radius:999px; font-weight:800; font-size:14.5px; box-shadow:0 10px 24px rgba(226,35,26,.35);}
+  .btn-ghost{background:transparent; color:#fff; border:1px solid rgba(255,255,255,.35); padding:13px 22px; border-radius:999px; font-weight:700; font-size:14.5px;}
+  .badges-row{display:flex; gap:22px; flex-wrap:wrap;}
+  .badge-item{display:flex; align-items:center; gap:8px; font-size:12.5px; color:#e8e0f5; font-weight:600;}
+  .badge-item .ic{width:30px;height:30px;border-radius:50%;background:rgba(247,201,72,.15); border:1px solid var(--gold); display:flex;align-items:center;justify-content:center;font-size:14px;}
 
-  .burst-wrap{position:relative; aspect-ratio:1/1; max-width:400px; margin:0 auto;}
+  .burst-wrap{position:relative; aspect-ratio:1/1; max-width:380px; margin:0 auto;}
   .burst-wrap svg{width:100%; height:100%;}
   .burst-dot{transform-origin:200px 200px; animation:pop 2.6s ease-in-out infinite;}
-  @keyframes pop{
-    0%,100%{opacity:.35; transform:scale(.85);}
-    50%{opacity:1; transform:scale(1.15);}
-  }
+  @keyframes pop{0%,100%{opacity:.35; transform:scale(.85);} 50%{opacity:1; transform:scale(1.15);}}
   @media (prefers-reduced-motion: reduce){ .burst-dot{animation:none;} }
 
-  .catnav{
-    position:sticky; top:65px; z-index:30; background:rgba(15,12,26,0.92); backdrop-filter:blur(8px);
-    border-bottom:1px solid var(--line);
-  }
-  .catnav-inner{
-    max-width:1180px; margin:0 auto; padding:12px 22px; display:flex; gap:10px;
-    overflow-x:auto; scrollbar-width:none;
-  }
+  /* ---------- category nav ---------- */
+  .catnav{position:sticky; top:64px; z-index:30; background:#fff; border-bottom:2px solid var(--line);}
+  .catnav-inner{max-width:1200px; margin:0 auto; padding:10px 22px; display:flex; gap:8px; overflow-x:auto; scrollbar-width:none;}
   .catnav-inner::-webkit-scrollbar{display:none;}
-  .catnav a{
-    white-space:nowrap; font-size:13px; padding:8px 15px; border-radius:999px;
-    border:1px solid var(--line); color:var(--ink-dim); text-decoration:none; flex:0 0 auto;
+  .catnav a{white-space:nowrap; font-size:12.5px; padding:7px 14px; border-radius:999px; border:1.5px solid var(--magenta); color:var(--magenta); text-decoration:none; flex:0 0 auto; font-weight:600;}
+  .catnav a:hover{background:var(--magenta); color:#fff;}
+
+  main{max-width:1200px; margin:0 auto; padding:32px 22px 90px; position:relative;}
+
+  /* ---------- price table frame (matches PDF pages 2-4) ---------- */
+  .frame{
+    background:linear-gradient(160deg, var(--magenta) 0%, var(--magenta-2) 100%);
+    border-radius:22px; padding:14px; box-shadow:var(--shadow); margin-bottom:34px;
   }
-  .catnav a:hover{border-color:var(--gold); color:var(--gold-2);}
-
-  main{max-width:1180px; margin:0 auto; padding:36px 22px 90px; position:relative; z-index:1;}
-
-  .cat-section{margin-bottom:52px; scroll-margin-top:130px;}
-  .cat-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:18px; gap:12px;}
-  .cat-head h2{font-size:24px; margin:0; font-weight:600;}
-  .cat-head .count{font-size:12.5px; color:var(--ink-faint);}
-
-  .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(210px,1fr)); gap:18px;}
-  .card{
-    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
-    overflow:hidden; display:flex; flex-direction:column; transition:transform .18s, box-shadow .18s;
+  .frame-inner{background:#fff; border-radius:14px; overflow:hidden;}
+  .table-scroll{overflow-x:auto;}
+  table.price-table{width:100%; border-collapse:collapse; min-width:720px;}
+  table.price-table thead th{
+    background:var(--red); color:#fff; font-size:12.5px; text-transform:uppercase; letter-spacing:.3px;
+    padding:12px 10px; text-align:left; border:1px solid #f4b0ab; position:sticky; top:113px; z-index:5;
   }
-  .card:hover{transform:translateY(-3px); box-shadow:var(--shadow);}
-  .card-img{aspect-ratio:4/3; background:var(--bg-2); display:flex; align-items:center; justify-content:center; overflow:hidden;}
-  .card-img img{width:100%; height:100%; object-fit:cover;}
-  .card-body{padding:14px 14px 16px; display:flex; flex-direction:column; gap:8px; flex:1;}
-  .card-code{font-size:11px; color:var(--ink-faint); letter-spacing:.4px;}
-  .card-name{font-size:15px; font-weight:600; line-height:1.3; min-height:38px;}
-  .price-row{display:flex; align-items:baseline; gap:8px; margin-top:auto;}
-  .price-now{font-size:17px; font-weight:700; color:var(--gold-2); font-family:'Fraunces',serif;}
-  .price-mrp{font-size:12.5px; color:var(--ink-faint); text-decoration:line-through;}
-  .disc-tag{font-size:10.5px; background:rgba(55,199,179,.15); color:var(--teal); padding:2px 7px; border-radius:6px; font-weight:700;}
-  .qty-row{display:flex; align-items:center; gap:10px; margin-top:4px;}
-  .stepper{display:flex; align-items:center; border:1px solid var(--line); border-radius:8px; overflow:hidden;}
-  .stepper button{background:transparent; border:none; color:var(--ink); width:28px; height:30px; font-size:15px;}
-  .stepper button:hover{background:var(--bg-2);}
-  .stepper input{width:34px; text-align:center; background:transparent; border:none; color:var(--ink); font-size:13px;}
-  .add-btn{flex:1; background:var(--gold); color:#241505; border:none; border-radius:8px; height:30px; font-weight:700; font-size:12.5px;}
-  .add-btn.in-cart{background:var(--teal); color:#06231e;}
-
-  .fab-cart{position:fixed; right:22px; bottom:22px; z-index:50;}
-
-  .overlay{
-    position:fixed; inset:0; background:rgba(8,6,16,.6); backdrop-filter:blur(3px);
-    z-index:80; display:none; align-items:stretch; justify-content:flex-end;
+  table.price-table thead th.disc-th{color:var(--gold-2);}
+  table.price-table thead th.center, table.price-table td.center{text-align:center;}
+  tr.cat-divider td{
+    background:var(--green); color:#fff; font-weight:800; font-size:14.5px; text-transform:uppercase;
+    padding:9px 12px; border:1px solid var(--green-dark); scroll-margin-top:170px; letter-spacing:.3px;
   }
+  table.price-table td{padding:8px 10px; border:1px solid #f4d9b0; font-size:13.5px; vertical-align:middle;}
+  table.price-table tbody tr.item-row:nth-child(even){background:#fffdf6;}
+  td.col-img img{width:44px; height:44px; object-fit:cover; border-radius:8px; background:#f4ecd8; cursor:zoom-in; transition:transform .15s;}
+  td.col-img img:hover{transform:scale(1.08); box-shadow:0 4px 10px rgba(0,0,0,.25);}
+  td.col-sno{color:var(--pink); font-weight:800; text-align:center; width:44px;}
+  td.col-name{color:var(--ink); font-weight:700; min-width:210px;}
+  td.col-per{color:var(--ink); font-weight:600; white-space:nowrap;}
+  td.col-actual{color:var(--ink); font-weight:600; text-decoration:line-through; opacity:.75; white-space:nowrap;}
+  td.col-disc{color:var(--red-dark); font-weight:800; white-space:nowrap;}
+  td.col-qty input{width:56px; padding:6px 7px; border:1.5px solid var(--line); border-radius:7px; font-size:13px; text-align:center; font-family:inherit;}
+  td.col-qty input:focus{outline:2px solid var(--gold); outline-offset:1px;}
+  td.col-amt{font-weight:800; color:var(--green-dark); white-space:nowrap;}
+
+  .cat-head-title{padding:16px 18px 4px; font-size:13px; color:#8a7aa0;}
+
+  /* ---------- fab cart / drawer / modal ---------- */
+  .overlay{position:fixed; inset:0; background:rgba(20,8,30,.55); backdrop-filter:blur(3px); z-index:80; display:none; align-items:stretch; justify-content:flex-end;}
   .overlay.open{display:flex;}
   .overlay.center{align-items:center; justify-content:center;}
-  .drawer{
-    width:min(440px, 100%); background:var(--bg-1); height:100%; overflow-y:auto;
-    border-left:1px solid var(--line); padding:22px; display:flex; flex-direction:column; gap:16px;
-  }
-  .modal-box{
-    width:min(360px, 92vw); background:var(--bg-1); border:1px solid var(--line); border-radius:16px;
-    padding:26px; display:flex; flex-direction:column; gap:14px;
-  }
+  .drawer{width:min(440px, 100%); background:var(--cream); height:100%; overflow-y:auto; border-left:4px solid var(--magenta); padding:22px; display:flex; flex-direction:column; gap:16px;}
+  .modal-box{width:min(360px, 92vw); background:var(--cream); border:3px solid var(--magenta); border-radius:16px; padding:26px; display:flex; flex-direction:column; gap:14px;}
   .drawer-head{display:flex; justify-content:space-between; align-items:center;}
-  .drawer-head h3{margin:0; font-size:20px;}
-  .icon-btn{background:transparent; border:1px solid var(--line); color:var(--ink); width:32px; height:32px; border-radius:8px; font-size:16px;}
+  .drawer-head h3{margin:0; font-size:20px; color:var(--magenta);}
+  .icon-btn{background:#fff; border:1.5px solid var(--line); color:var(--ink); width:32px; height:32px; border-radius:8px; font-size:16px;}
   .cart-item{display:flex; gap:12px; padding:12px 0; border-bottom:1px solid var(--line);}
-  .cart-item img{width:56px; height:56px; object-fit:cover; border-radius:8px; background:var(--bg-2);}
+  .cart-item img{width:52px; height:52px; object-fit:cover; border-radius:8px; background:#f4ecd8;}
   .cart-item .ci-info{flex:1;}
-  .cart-item .ci-name{font-size:13.5px; font-weight:600;}
-  .cart-item .ci-price{font-size:12px; color:var(--ink-faint); margin-top:2px;}
-  .remove-link{font-size:11.5px; color:var(--magenta); background:none; border:none; padding:0; margin-top:6px;}
-  .cart-total-row{display:flex; justify-content:space-between; font-size:15px; font-weight:700; padding-top:6px;}
-  .empty-note{color:var(--ink-faint); font-size:13.5px; text-align:center; padding:30px 0;}
+  .cart-item .ci-name{font-size:13.5px; font-weight:700; color:var(--ink);}
+  .cart-item .ci-price{font-size:12px; color:#7a6f8f; margin-top:2px;}
+  .remove-link{font-size:11.5px; color:var(--red); background:none; border:none; padding:0; margin-top:6px; font-weight:700;}
+  .cart-total-row{display:flex; justify-content:space-between; font-size:16px; font-weight:800; padding-top:6px; color:var(--magenta);}
+  .empty-note{color:#8a7aa0; font-size:13.5px; text-align:center; padding:30px 0;}
 
   .field{display:flex; flex-direction:column; gap:6px;}
-  .field label{font-size:12.5px; color:var(--ink-dim); font-weight:600;}
-  .field label .req{color:var(--magenta);}
+  .field label{font-size:12.5px; color:var(--magenta); font-weight:700;}
+  .field label .req{color:var(--red);}
   .field input, .field select, .field textarea{
-    background:var(--bg-2); border:1px solid var(--line); color:var(--ink); padding:10px 12px;
-    border-radius:9px; font-size:13.5px; font-family:inherit;
+    background:#fff; border:1.5px solid var(--line); color:var(--ink); padding:10px 12px; border-radius:9px; font-size:13.5px; font-family:inherit;
   }
   .field input:focus, .field select:focus, .field textarea:focus{outline:2px solid var(--gold); outline-offset:1px;}
-  .form-note{font-size:11.5px; color:var(--ink-faint); line-height:1.5;}
-  .submit-btn{background:var(--gold); color:#241505; border:none; padding:13px; border-radius:10px; font-weight:700; font-size:14.5px; width:100%;}
+  .form-note{font-size:11.5px; color:#8a7aa0; line-height:1.5;}
+  .submit-btn{background:var(--red); color:#fff; border:none; padding:13px; border-radius:10px; font-weight:800; font-size:14.5px; width:100%;}
   .submit-btn:disabled{opacity:.6;}
-  .success-box{background:rgba(55,199,179,.12); border:1px solid rgba(55,199,179,.4); color:var(--teal); padding:14px; border-radius:10px; font-size:13.5px; line-height:1.5;}
-  .error-box{background:rgba(255,77,109,.1); border:1px solid rgba(255,77,109,.4); color:#ff9db0; padding:10px 12px; border-radius:9px; font-size:12.5px;}
-  .warn-banner{
-    background:rgba(245,166,35,.12); border:1px solid rgba(245,166,35,.4); color:var(--gold-2);
-    padding:12px 16px; border-radius:10px; font-size:13px; max-width:1180px; margin:0 auto; line-height:1.5;
-  }
+  .success-box{background:rgba(26,156,74,.1); border:1px solid rgba(26,156,74,.4); color:var(--green-dark); padding:14px; border-radius:10px; font-size:13.5px; line-height:1.5;}
+  .error-box{background:rgba(226,35,26,.08); border:1px solid rgba(226,35,26,.35); color:var(--red-dark); padding:10px 12px; border-radius:9px; font-size:12.5px;}
+  .warn-banner{background:#fff3cf; border:1px solid var(--gold); color:#6b5100; padding:12px 16px; border-radius:10px; font-size:13px; max-width:1200px; margin:14px auto; line-height:1.5;}
 
-  footer{border-top:1px solid var(--line); padding:36px 22px 90px; position:relative; z-index:1;}
-  .footer-inner{max-width:1180px; margin:0 auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:18px; font-size:12.5px; color:var(--ink-faint);}
-  .admin-link{background:none; border:none; color:var(--ink-faint); font-size:12px; text-decoration:underline; cursor:pointer;}
+  footer{border-top:4px solid var(--magenta); background:var(--navy); color:#e6def0; padding:36px 22px 90px;}
+  .footer-inner{max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:18px; font-size:12.5px;}
+  .admin-link{background:none; border:none; color:var(--gold-2); font-size:12px; text-decoration:underline; cursor:pointer;}
 
-  .admin-panel{background:var(--bg-1); border:1px solid var(--line); border-radius:var(--radius); padding:24px; margin-bottom:40px;}
+  .admin-panel{background:#fff; border:2px solid var(--magenta); border-radius:var(--radius); padding:24px; margin-bottom:40px;}
   .admin-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;}
   .admin-tabs{display:flex; gap:8px;}
-  .admin-tab{background:transparent; border:1px solid var(--line); color:var(--ink-dim); padding:8px 14px; border-radius:999px; font-size:13px;}
-  .admin-tab.active{background:var(--gold); color:#241505; border-color:var(--gold); font-weight:700;}
+  .admin-tab{background:#fff; border:1.5px solid var(--magenta); color:var(--magenta); padding:8px 14px; border-radius:999px; font-size:13px; font-weight:600;}
+  .admin-tab.active{background:var(--magenta); color:#fff;}
   .admin-grid{display:grid; grid-template-columns:340px 1fr; gap:24px;}
-  @media (max-width:820px){.admin-grid{grid-template-columns:1fr;} .admin-grid{gap:20px;}}
-  .img-drop{
-    border:1.5px dashed var(--line); border-radius:12px; padding:16px; text-align:center; cursor:pointer;
-    background:var(--bg-2); display:flex; flex-direction:column; align-items:center; gap:8px;
-  }
+  @media (max-width:820px){.admin-grid{grid-template-columns:1fr; gap:20px;}}
+  .img-drop{border:1.5px dashed var(--magenta); border-radius:12px; padding:16px; text-align:center; cursor:pointer; background:#fbf4ff; display:flex; flex-direction:column; align-items:center; gap:8px;}
   .img-drop img{max-height:120px; border-radius:8px;}
-  .img-drop span{font-size:12px; color:var(--ink-faint);}
+  .img-drop span{font-size:12px; color:#8a7aa0;}
   table.orders-tbl{width:100%; border-collapse:collapse; font-size:13px;}
   table.orders-tbl th, table.orders-tbl td{text-align:left; padding:10px 8px; border-bottom:1px solid var(--line); vertical-align:top;}
-  table.orders-tbl th{color:var(--ink-faint); font-weight:600; font-size:11.5px; text-transform:uppercase; letter-spacing:.4px;}
-  .pill-sm{font-size:10.5px; background:var(--bg-2); padding:2px 8px; border-radius:999px; color:var(--ink-dim);}
+  table.orders-tbl th{color:#8a7aa0; font-weight:700; font-size:11.5px; text-transform:uppercase; letter-spacing:.4px;}
+  .pill-sm{font-size:10.5px; background:#f4ecd8; padding:2px 8px; border-radius:999px; color:var(--ink);}
   .prod-row{display:flex; align-items:center; gap:10px; padding:8px 6px; border-bottom:1px solid var(--line); font-size:13px;}
-  .prod-row img{width:38px;height:38px;object-fit:cover;border-radius:6px;background:var(--bg-2);}
+  .prod-row img{width:38px;height:38px;object-fit:cover;border-radius:6px;background:#f4ecd8;}
   .prod-row .pr-name{flex:1;}
-  .del-btn{background:none;border:none;color:var(--magenta);font-size:12px;}
-  .toast{position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:100; background:var(--teal); color:#06231e; padding:10px 18px; border-radius:999px; font-size:13px; font-weight:700; box-shadow:var(--shadow); display:none;}
-  .loading-row{color:var(--ink-faint); font-size:13px; padding:20px 0; text-align:center;}
+  .del-btn{background:none;border:none;color:var(--red);font-size:12px; font-weight:700;}
+  .toast{position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:100; background:var(--green); color:#fff; padding:10px 18px; border-radius:999px; font-size:13px; font-weight:700; box-shadow:var(--shadow); display:none;}
+  .loading-row{color:#8a7aa0; font-size:13px; padding:20px 0; text-align:center;}
+
+  .img-popup-box{background:#fff; border-radius:16px; padding:18px; max-width:min(420px,92vw); display:flex; flex-direction:column; gap:12px; align-items:center; box-shadow:var(--shadow);}
+  .img-popup-box img{max-width:100%; max-height:60vh; border-radius:10px; background:#f4ecd8; object-fit:contain;}
+  .img-popup-cap{font-size:14px; font-weight:700; color:var(--ink); text-align:center;}
+  .img-popup-close{align-self:flex-end; background:var(--magenta); color:#fff; border:none; width:32px; height:32px; border-radius:8px; font-size:16px; line-height:1;}
 </style>
 </head>
 <body>
-<div class="stars"></div>
 <div class="toast" id="toast"></div>
 <div id="configWarning"></div>
 
@@ -253,15 +199,15 @@
   <div class="topbar-inner">
     <div class="brand">
       <div class="brand-mark">🎆</div>
-      <div class="brand-name">Spark <span>&</span> Ember</div>
+      <div class="brand-name">WONDER <span>PYRO TECH</span></div>
     </div>
     <nav class="mainnav">
       <a href="#top">Home</a>
-      <a href="#catalog">Products</a>
+      <a href="#catalog">Price List</a>
       <a href="#about">About</a>
     </nav>
     <div class="topbar-actions">
-      <div class="call-chip">📞 <b>+91 90000 12345</b></div>
+      <div class="call-chip">📞 <b>77084 50260</b></div>
       <button class="cart-btn" id="openCartBtn">🧨 Cart <span class="cart-badge" id="cartCount">0</span></button>
     </div>
   </div>
@@ -271,16 +217,18 @@
   <div class="hero-inner">
     <div>
       <div class="eyebrow">Wholesale Fireworks · Sivakasi</div>
-      <h1>Light up the night with <em>Spark &amp; Ember</em></h1>
-      <p class="lede">Direct-from-factory sparklers, flower pots, chakkars, rockets and aerial shots at wholesale prices. Browse the catalog, build your box, and place your order in minutes.</p>
+      <h1><span class="wonder">WONDER</span> PYRO TECH</h1>
+      <p class="sub">Price List — 2026</p>
+      <p class="lede">Sparklers, one-sound crackers, flower pots, chakkars, fancy sky shots and repeating shots — full wholesale catalog with live discount pricing. Enter quantities right in the table and submit your order.</p>
       <div class="hero-ctas">
-        <button class="btn-primary" onclick="document.getElementById('catalog').scrollIntoView()">Browse catalog</button>
+        <button class="btn-primary" onclick="document.getElementById('catalog').scrollIntoView()">View price list</button>
         <a class="btn-ghost" href="#about" style="text-decoration:none; display:inline-flex; align-items:center;">How ordering works</a>
       </div>
-      <div class="hero-stats">
-        <div><b id="statCount">–</b><span>Products live</span></div>
-        <div><b>20%</b><span>Flat wholesale off</span></div>
-        <div><b>24 Hrs</b><span>Dispatch window</span></div>
+      <div class="badges-row">
+        <div class="badge-item"><span class="ic">🏅</span>Best Quality</div>
+        <div class="badge-item"><span class="ic">🛡️</span>Safe &amp; Reliable</div>
+        <div class="badge-item"><span class="ic">✨</span>Brighter Celebrations</div>
+        <div class="badge-item"><span class="ic">🎁</span>Biggest Collection</div>
       </div>
     </div>
     <div class="burst-wrap">
@@ -299,18 +247,16 @@
 <footer id="about">
   <div class="footer-inner">
     <div style="max-width:420px;">
-      <div class="brand" style="margin-bottom:10px;"><div class="brand-mark" style="width:28px;height:28px;font-size:13px;">🎆</div><b style="color:var(--ink);">Spark &amp; Ember</b></div>
-      Wholesale fireworks supplier. Prices shown are indicative wholesale rates — final billing is confirmed by our team on WhatsApp after you submit an order. Sale to licensed adults only, where permitted by local regulation.
+      <div class="brand" style="margin-bottom:10px;"><div class="brand-mark" style="width:28px;height:28px;font-size:13px;">🎆</div><b style="color:#fff;">Wonder Pyro Tech</b></div>
+      Wholesale fireworks supplier. Prices shown are indicative wholesale rates — final billing is confirmed by our team on WhatsApp/call after you submit an order. Sale to licensed adults only, where permitted by local regulation.
     </div>
     <div>
-      <div style="color:var(--ink); font-weight:600; margin-bottom:8px;">Store</div>
+      <div style="color:#fff; font-weight:700; margin-bottom:8px;">Store</div>
       Sivakasi, Tamil Nadu, India<br>
       Mon–Sun, 24 hours<br>
-      orders@sparkandember.example
+      📞 77084 50260
     </div>
-    <div>
-      <button class="admin-link" id="adminLinkBtn">Admin login</button>
-    </div>
+    <div><button class="admin-link" id="adminLinkBtn">Admin login</button></div>
   </div>
 </footer>
 
@@ -337,7 +283,15 @@
   </div>
 </div>
 
-<!-- Firebase SDKs (compat build, simplest for plain JS) -->
+<!-- Product image popup -->
+<div class="overlay center" id="imgPopupOverlay">
+  <div class="img-popup-box">
+    <button class="img-popup-close" id="imgPopupClose">✕</button>
+    <img id="imgPopupImage" src="" alt="">
+    <div class="img-popup-cap" id="imgPopupCaption"></div>
+  </div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -345,23 +299,21 @@
 <script>
 /* =========================================================================
    FIREBASE SETUP — replace the placeholders below with YOUR project's config.
-   Get this from: Firebase Console → Project settings → General → Your apps → SDK setup.
+   Firebase Console → Project settings → General → Your apps → SDK setup.
    ========================================================================= */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDj4gpgNLLNwIlbbkMyRwQOwwSRAeKWWvY",
+  authDomain: "wounderpyrotechdb.firebaseapp.com",
+  projectId: "wounderpyrotechdb",
+  storageBucket: "wounderpyrotechdb.appspot.com",
+  messagingSenderId: "451969576507",
+  appId: "1:451969576507:web:cf1489a15efe41a0df761e"
 };
-
 const CONFIG_IS_PLACEHOLDER = firebaseConfig.apiKey === "YOUR_API_KEY";
 if(CONFIG_IS_PLACEHOLDER){
   document.getElementById('configWarning').innerHTML =
-    '<div class="warn-banner" style="margin:14px auto;">⚠️ Firebase isn\'t configured yet. Edit <code>firebaseConfig</code> near the top of the &lt;script&gt; in index.html with your own project keys, then reload. See README.md for step-by-step setup.</div>';
+    '<div class="warn-banner">⚠️ Firebase isn\'t configured yet. Edit <code>firebaseConfig</code> near the top of the &lt;script&gt; in index.html with your own project keys, then reload. See README.md for step-by-step setup.</div>';
 }
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
@@ -377,63 +329,128 @@ function toast(msg){
   window.__toastTimer = setTimeout(()=>{ t.style.display='none'; }, 2600);
 }
 function money(n){ return '₹' + Number(n).toLocaleString('en-IN'); }
-
 function placeholderSvg(label, tint){
   const safe = (label||'?').slice(0,2).toUpperCase();
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="225">
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
     <rect width="100%" height="100%" fill="${tint}"/>
-    <circle cx="150" cy="95" r="34" fill="none" stroke="#ffffffaa" stroke-width="3"/>
+    <circle cx="100" cy="80" r="30" fill="none" stroke="#ffffffaa" stroke-width="3"/>
     <g stroke="#ffffffaa" stroke-width="3">
-      <line x1="150" y1="35" x2="150" y2="15"/><line x1="150" y1="155" x2="150" y2="175"/>
-      <line x1="90" y1="95" x2="70" y2="95"/><line x1="210" y1="95" x2="230" y2="95"/>
-      <line x1="108" y1="53" x2="94" y2="39"/><line x1="192" y1="53" x2="206" y2="39"/>
-      <line x1="108" y1="137" x2="94" y2="151"/><line x1="192" y1="137" x2="206" y2="151"/>
+      <line x1="100" y1="26" x2="100" y2="10"/><line x1="100" y1="134" x2="100" y2="150"/>
+      <line x1="46" y1="80" x2="30" y2="80"/><line x1="154" y1="80" x2="170" y2="80"/>
     </g>
-    <text x="150" y="200" font-family="sans-serif" font-size="15" fill="#ffffffcc" text-anchor="middle">${safe}</text>
+    <text x="100" y="175" font-family="sans-serif" font-size="15" fill="#ffffffcc" text-anchor="middle">${safe}</text>
   </svg>`;
   return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
-const TINTS = ['#5b3aa0','#a0355b','#2e7d6b','#8a5a1f','#3a4f9e','#7a3aa0','#a05a2e','#2e6ea0'];
-function tintFor(cat){
-  let h=0; for(const c of cat) h = (h*31 + c.charCodeAt(0)) % TINTS.length;
-  return TINTS[h];
-}
+const TINTS = ['#8e1a6b','#c22a95','#1a9c4a','#b8850f','#3a4f9e','#a05a2e','#2e6ea0','#7a3aa0'];
+function tintFor(cat){ let h=0; for(const c of cat) h=(h*31+c.charCodeAt(0))%TINTS.length; return TINTS[h]; }
 
+// ---------- full catalog from Wonder Pyro Tech Price List 2026 (pages 2-4) ----------
 const DEFAULT_SEED = [
-  {category:'Sparklers', name:'10cm Electric Sparklers', mrp:20, price:16},
-  {category:'Sparklers', name:'15cm Colour Sparklers', mrp:44, price:35.2},
-  {category:'Sparklers', name:'30cm Green Sparklers', mrp:48, price:38.4},
-  {category:'Flower Pots', name:'Flower Pot Big', mrp:75, price:60},
-  {category:'Flower Pots', name:'Colour Koti', mrp:195, price:156},
-  {category:'Ground Chakkars', name:'Ground Chakkar Big', mrp:40, price:32},
-  {category:'Ground Chakkars', name:'Disco Wheel', mrp:105, price:84},
-  {category:'Rockets', name:'Rocket Bomb', mrp:75, price:60},
-  {category:'Rockets', name:'Mega Rocket', mrp:130, price:104},
-  {category:'Bombs & Aerial', name:'Classic Bomb', mrp:125, price:100},
-  {category:'Bombs & Aerial', name:'12 Shots Aerial', mrp:180, price:144},
-  {category:'Fountains', name:'Peacock Feather', mrp:108, price:86.4},
-  {category:'Kids Special', name:'Twinkling Star', mrp:30, price:24},
-  {category:'Gift Boxes', name:'Festival Gift Box – Silver', mrp:1500, price:1200},
+ // SPARKLERS PRODUCT
+ {code:1,category:'Sparklers Product',name:'7 CM Green Sparklers',per:'1 Box',mrp:40,price:14},
+ {code:2,category:'Sparklers Product',name:'7 CM Red Sparklers',per:'1 Box',mrp:55,price:19},
+ {code:3,category:'Sparklers Product',name:'12 CM Electric Sparklers',per:'1 Box',mrp:85,price:30},
+ {code:4,category:'Sparklers Product',name:'12 CM Colour Sparklers',per:'1 Box',mrp:135,price:47},
+ {code:5,category:'Sparklers Product',name:'15 CM Electric Sparklers',per:'1 Box',mrp:130,price:44},
+ {code:6,category:'Sparklers Product',name:'15 CM Colour Sparklers',per:'1 Box',mrp:135,price:47},
+ {code:7,category:'Sparklers Product',name:'30 CM Colour Sparklers (5 Pcs)',per:'1 Box',mrp:135,price:47},
+ {code:8,category:'Sparklers Product',name:'50 CM Colour Sparklers (5 Pcs)',per:'1 Box',mrp:570,price:200},
+ // ONE SOUND CRACKERS
+ {code:9,category:'One Sound Crackers',name:'4" Gold Lakshmi Crackers',per:'1 Pkt',mrp:130,price:45},
+ {code:10,category:'One Sound Crackers',name:'4" Lakshmi Deluxe Crackers',per:'1 Pkt',mrp:100,price:35},
+ {code:11,category:'One Sound Crackers',name:'3½" Lakshmi Crackers',per:'1 Pkt',mrp:50,price:18},
+ {code:12,category:'One Sound Crackers',name:'2 Sound Green Display',per:'1 Pkt',mrp:200,price:70},
+ {code:13,category:'One Sound Crackers',name:'Beauty 600',per:'1 Box',mrp:1230,price:430},
+ {code:14,category:'One Sound Crackers',name:'Shiny 1K',per:'1 Box',mrp:1685,price:590},
+ {code:15,category:'One Sound Crackers',name:'Jammai 2K',per:'1 Box',mrp:3430,price:1200},
+ {code:16,category:'One Sound Crackers',name:'Luxury 5K',per:'1 Box',mrp:8575,price:3000},
+ {code:17,category:'One Sound Crackers',name:'Mega Party 10K',per:'1 Box',mrp:17150,price:6100},
+ {code:18,category:'One Sound Crackers',name:'Hydro Bomb (Green) (10 Pcs)',per:'1 Box',mrp:245,price:85},
+ {code:19,category:'One Sound Crackers',name:'Jurasic Bomb (10 Pcs)',per:'1 Box',mrp:370,price:130},
+ // FLOWER POTS FOUNTAIN
+ {code:20,category:'Flower Pots Fountain',name:'Flower Pot Special Green (10 Pcs)',per:'1 Box',mrp:340,price:120},
+ {code:21,category:'Flower Pots Fountain',name:'Flower Pot Ashoka Green (10 Pcs)',per:'1 Box',mrp:400,price:140},
+ {code:22,category:'Flower Pots Fountain',name:'Tri Colour Fountain (5 Pcs)',per:'1 Box',mrp:1175,price:410},
+ {code:23,category:'Flower Pots Fountain',name:'Wonder Star Crackling (5 Pcs)',per:'1 Box',mrp:515,price:180},
+ {code:24,category:'Flower Pots Fountain',name:'Silver Star Crackling (5 Pcs)',per:'1 Box',mrp:515,price:180},
+ {code:25,category:'Flower Pots Fountain',name:'Golden Star (Feather Drops) 5 Pcs',per:'1 Box',mrp:550,price:190},
+ // GROUND CHAKKARS & FANCY CHAKKARS
+ {code:26,category:'Ground Chakkars & Fancy Chakkars',name:'Ground Chakkar Big (10 Pcs)',per:'1 Box',mrp:155,price:55},
+ {code:27,category:'Ground Chakkars & Fancy Chakkars',name:'Ground Chakkar Special (10 Pcs)',per:'1 Box',mrp:288,price:100},
+ {code:28,category:'Ground Chakkars & Fancy Chakkars',name:'Ground Chakkar Ashoka (10 Pcs)',per:'1 Box',mrp:230,price:80},
+ {code:29,category:'Ground Chakkars & Fancy Chakkars',name:'Ground Chakkar Spinners Plastic (10 Pcs)',per:'1 Box',mrp:370,price:130},
+ {code:30,category:'Ground Chakkars & Fancy Chakkars',name:'Ground Chakkar Spinners Dlx. (10 Pcs)',per:'1 Box',mrp:575,price:200},
+ // NOVELTIES
+ {code:31,category:'Novelties',name:'4" Twinkling Star Deluxe',per:'1 Box',mrp:150,price:90},
+ {code:32,category:'Novelties',name:'Peacock',per:'1 Box',mrp:660,price:230},
+ {code:33,category:'Novelties',name:'Chitput',per:'1 Box',mrp:230,price:80},
+ {code:34,category:'Novelties',name:'Peacock (Big)',per:'1 Box',mrp:1715,price:600},
+ {code:35,category:'Novelties',name:'Emarold Robo (5 Pcs)',per:'1 Box',mrp:415,price:145},
+ {code:36,category:'Novelties',name:'Silver Robo (5 Pcs)',per:'1 Box',mrp:415,price:145},
+ {code:37,category:'Novelties',name:'Russia Robo (5 Pcs)',per:'1 Box',mrp:415,price:145},
+ {code:38,category:'Novelties',name:'Helicopter (5 Pcs)',per:'1 Box',mrp:445,price:155},
+ {code:39,category:'Novelties',name:'Rio Fountain',per:'1 Box',mrp:145,price:50},
+ {code:40,category:'Novelties',name:'Mega Siren',per:'1 Box',mrp:970,price:340},
+ {code:41,category:'Novelties',name:'Crackling Cinderella (Fountain)',per:'1 Box',mrp:315,price:110},
+ {code:42,category:'Novelties',name:'Disco Wheel',per:'1 Box',mrp:660,price:230},
+ // 2" FANCY PRODUCTS SKY DISPLAY
+ {code:44,category:'2" Fancy Products Sky Display',name:'2" Green Angel (3 Pcs)',per:'1 Box',mrp:950,price:330},
+ {code:45,category:'2" Fancy Products Sky Display',name:'2" Lal Marchi (3 Pcs)',per:'1 Box',mrp:950,price:330},
+ {code:46,category:'2" Fancy Products Sky Display',name:'2" Must You Must (3 Pcs)',per:'1 Box',mrp:950,price:330},
+ {code:47,category:'2" Fancy Products Sky Display',name:'2" Palm Tree (3 Pcs)',per:'1 Box',mrp:950,price:330},
+ {code:48,category:'2" Fancy Products Sky Display',name:'2" Rangeela (3 Pcs)',per:'1 Box',mrp:950,price:330},
+ {code:49,category:'2" Fancy Products Sky Display',name:'2" Hulk War (3 Pcs)',per:'1 Box',mrp:1150,price:400},
+ // 2½" FANCY PRODUCTS SKY DISPLAY
+ {code:50,category:'2½" Fancy Products Sky Display',name:'2½" Folk (3 in 1) (3 Pcs)',per:'1 Box',mrp:1250,price:435},
+ {code:51,category:'2½" Fancy Products Sky Display',name:'2½" Swing (3 in 1) (3 Pcs)',per:'1 Box',mrp:1250,price:435},
+ {code:52,category:'2½" Fancy Products Sky Display',name:'2½" Gypsy (3 in 1) (3 Pcs)',per:'1 Box',mrp:1250,price:435},
+ {code:53,category:'2½" Fancy Products Sky Display',name:'2½" Balle (3 in 1) (3 Pcs)',per:'1 Box',mrp:1250,price:435},
+ // 3" FANCY PRODUCTS SKY DISPLAY
+ {code:54,category:'3" Fancy Products Sky Display',name:'3" Golden Harvest (Gold with Crackling) (2 Pcs)',per:'1 Box',mrp:1460,price:510},
+ {code:55,category:'3" Fancy Products Sky Display',name:'3" Moon Blast (White with Crackling) (2 Pcs)',per:'1 Box',mrp:1460,price:510},
+ {code:56,category:'3" Fancy Products Sky Display',name:'3" Pearl Drops (White Display) (2 Pcs)',per:'1 Box',mrp:1460,price:510},
+ {code:57,category:'3" Fancy Products Sky Display',name:'3" Thunder Hunter (Red Display) (2 Pcs)',per:'1 Box',mrp:1460,price:510},
+ {code:58,category:'3" Fancy Products Sky Display',name:'3" Jungle Beats (Green Display) (2 Pcs)',per:'1 Box',mrp:1460,price:510},
+ // 4" FANCY PRODUCTS SKY DISPLAY
+ {code:59,category:'4" Fancy Products Sky Display',name:'4" Brave (Double Ball Function)',per:'1 Box',mrp:1600,price:560},
+ {code:60,category:'4" Fancy Products Sky Display',name:'4" Clara (Double Ball Function)',per:'1 Box',mrp:1600,price:560},
+ {code:61,category:'4" Fancy Products Sky Display',name:'4" Lorax (Double Ball Function)',per:'1 Box',mrp:1600,price:560},
+ {code:62,category:'4" Fancy Products Sky Display',name:'4" Rio (Double Ball Function)',per:'1 Box',mrp:1600,price:560},
+ {code:63,category:'4" Fancy Products Sky Display',name:'4" Ding Dong / Yin Yang (2 Pcs)',per:'1 Box',mrp:3400,price:1190},
+ {code:64,category:'4" Fancy Products Sky Display',name:'4" Jim Jam / Zig Zag (2 Pcs)',per:'1 Box',mrp:3400,price:1190},
+ {code:65,category:'4" Fancy Products Sky Display',name:'Agra India / Masco Russia (7 Step Function)',per:'1 Box',mrp:1460,price:510},
+ {code:66,category:'4" Fancy Products Sky Display',name:'Paris France / New York (7 Step Function)',per:'1 Box',mrp:1460,price:510},
+ // 5" FANCY PRODUCTS SKY DISPLAY
+ {code:67,category:'5" Fancy Products Sky Display',name:'5" Apple / Mango (2 Pcs)',per:'1 Box',mrp:4290,price:1500},
+ {code:68,category:'5" Fancy Products Sky Display',name:'5" Grapes / Pineapples (2 Pcs)',per:'1 Box',mrp:4290,price:1500},
+ // REPEATING SHOTS SKY DISPLAY
+ {code:69,category:'Repeating Shots Sky Display',name:'12 Colour Shots - Deluxe',per:'1 Box',mrp:615,price:215},
+ {code:70,category:'Repeating Shots Sky Display',name:'Festival Fun 25 Shots (Red & Green)',per:'1 Box',mrp:1315,price:460},
+ {code:71,category:'Repeating Shots Sky Display',name:'Maza 30 Shots',per:'1 Box',mrp:2230,price:780},
+ {code:72,category:'Repeating Shots Sky Display',name:'Carnival 50 Shots (Red & Green)',per:'1 Box',mrp:2750,price:960},
+ {code:73,category:'Repeating Shots Sky Display',name:'Paradaise 20 Shots',per:'1 Box',mrp:11150,price:3900},
+ {code:74,category:'Repeating Shots Sky Display',name:'Pyro Night 32 Shots',per:'1 Box',mrp:17580,price:6150},
+ {code:75,category:'Repeating Shots Sky Display',name:'Great Show (10 x 10)',per:'1 Box',mrp:17150,price:6000},
+ {code:76,category:'Repeating Shots Sky Display',name:'Night Rider 120 Shots',per:'1 Box',mrp:8850,price:3100},
+ {code:77,category:'Repeating Shots Sky Display',name:'Gang War 60 Shots Colour And Crackling',per:'1 Box',mrp:4850,price:1700},
 ];
 
 // ---------- Firestore data access ----------
 async function seedIfEmpty(){
   const snap = await db.collection('products').limit(1).get();
   if(!snap.empty) return;
-  let code = 1;
   const batch = db.batch();
   for(const item of DEFAULT_SEED){
     const ref = db.collection('products').doc();
     batch.set(ref, {
-      code: code++, category:item.category, name:item.name,
-      price:item.price, mrp:item.mrp,
-      img: placeholderSvg(item.name, tintFor(item.category)),
+      code:item.code, category:item.category, name:item.name, per:item.per,
+      price:item.price, mrp:item.mrp, img: placeholderSvg(item.name, tintFor(item.category)),
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
   }
   await batch.commit();
 }
-
 async function loadProducts(){
   if(CONFIG_IS_PLACEHOLDER){ PRODUCTS = []; return; }
   try{
@@ -446,30 +463,24 @@ async function loadProducts(){
     PRODUCTS = [];
   }
 }
-
 async function addProductToBackend(product){
   const ref = await db.collection('products').add({
-    code: product.code, category: product.category, name: product.name,
-    price: product.price, mrp: product.mrp, img: product.img,
+    code:product.code, category:product.category, name:product.name, per:product.per,
+    price:product.price, mrp:product.mrp, img:product.img,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
   return ref.id;
 }
-async function deleteProductFromBackend(id){
-  await db.collection('products').doc(id).delete();
-}
+async function deleteProductFromBackend(id){ await db.collection('products').doc(id).delete(); }
 async function saveOrderToBackend(order){
-  await db.collection('orders').add({
-    ...order,
-    placedAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
+  await db.collection('orders').add({ ...order, placedAt: firebase.firestore.FieldValue.serverTimestamp() });
 }
 async function loadOrdersFromBackend(){
   const snap = await db.collection('orders').orderBy('placedAt', 'desc').get();
   return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
-// ---------- rendering: catalog ----------
+// ---------- rendering: catalog table ----------
 function categories(){
   const seen = [];
   for(const p of PRODUCTS){ if(!seen.includes(p.category)) seen.push(p.category); }
@@ -478,63 +489,74 @@ function categories(){
 function slug(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-'); }
 
 function renderCatNav(){
-  document.getElementById('catNavInner').innerHTML =
-    categories().map(c => `<a href="#cat-${slug(c)}">${c}</a>`).join('');
+  document.getElementById('catNavInner').innerHTML = categories().map(c => `<a href="#cat-${slug(c)}">${c}</a>`).join('');
 }
 
-function cardHtml(p){
-  const inCart = CART[p.id] || 0;
-  const disc = p.mrp && p.mrp > p.price ? Math.round((1 - p.price/p.mrp)*100) : 0;
+function rowHtml(p){
+  const qty = CART[p.id] || '';
+  const amt = CART[p.id] ? money(CART[p.id]*p.price) : '—';
   return `
-  <div class="card">
-    <div class="card-img"><img src="${p.img}" alt="${p.name}" loading="lazy"></div>
-    <div class="card-body">
-      <div class="card-code">Code #${p.code}</div>
-      <div class="card-name">${p.name}</div>
-      <div class="price-row">
-        <span class="price-now">${money(p.price)}</span>
-        ${p.mrp && p.mrp > p.price ? `<span class="price-mrp">${money(p.mrp)}</span>` : ''}
-        ${disc ? `<span class="disc-tag">${disc}% off</span>` : ''}
-      </div>
-      <div class="qty-row">
-        <div class="stepper">
-          <button onclick="stepQty('${p.id}',-1)">−</button>
-          <input type="text" readonly id="qty-${p.id}" value="${inCart}">
-          <button onclick="stepQty('${p.id}',1)">+</button>
-        </div>
-        <button class="add-btn ${inCart?'in-cart':''}" id="add-${p.id}" onclick="addAtLeastOne('${p.id}')">${inCart? 'In box ✓' : 'Add'}</button>
-      </div>
-    </div>
-  </div>`;
+  <tr class="item-row" id="row-${p.id}">
+    <td class="col-sno center">${p.code}</td>
+    <td class="col-img center"><img src="${p.img}" alt="${p.name}" loading="lazy" onclick="openImagePopup(this)"></td>
+    <td class="col-name">${p.name}</td>
+    <td class="col-per">${p.per||'1 Box'}</td>
+    <td class="col-actual">${money(p.mrp)}</td>
+    <td class="col-disc">${money(p.price)}</td>
+    <td class="col-qty"><input type="number" min="0" inputmode="numeric" value="${qty}" placeholder="0" oninput="setQty('${p.id}', this.value)"></td>
+    <td class="col-amt" id="amt-${p.id}">${amt}</td>
+  </tr>`;
 }
 
 function renderCatalog(){
   const root = document.getElementById('catalog');
   const cats = categories();
-  root.innerHTML = cats.map(c => {
-    const items = PRODUCTS.filter(p=>p.category===c);
-    return `
-    <section class="cat-section" id="cat-${slug(c)}">
-      <div class="cat-head"><h2>${c}</h2><span class="count">${items.length} item${items.length===1?'':'s'}</span></div>
-      <div class="grid">${items.map(cardHtml).join('')}</div>
-    </section>`;
-  }).join('') || `<div class="loading-row">${CONFIG_IS_PLACEHOLDER ? 'Connect Firebase to load the catalog — see the banner above.' : 'No products yet — check back soon.'}</div>`;
-  document.getElementById('statCount').textContent = PRODUCTS.length || '–';
+  if(cats.length === 0){
+    root.innerHTML = `<div class="loading-row">${CONFIG_IS_PLACEHOLDER ? 'Connect Firebase to load the price list — see the banner above.' : 'No products yet — check back soon.'}</div>`;
+    document.getElementById('statCount') && (document.getElementById('statCount').textContent = '–');
+    return;
+  }
+  let bodyRows = '';
+  for(const c of cats){
+    bodyRows += `<tr class="cat-divider" id="cat-${slug(c)}"><td colspan="8">${c}</td></tr>`;
+    bodyRows += PRODUCTS.filter(p=>p.category===c).map(rowHtml).join('');
+  }
+  root.innerHTML = `
+    <div class="frame">
+      <div class="frame-inner">
+        <div class="table-scroll">
+          <table class="price-table">
+            <thead>
+              <tr>
+                <th class="center">S.No</th><th class="center">Image</th><th>Products</th><th>Per</th>
+                <th>Actual Price</th><th class="disc-th">Discount Price</th><th>Qty</th><th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>${bodyRows}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:flex-end; margin:-14px 0 10px;">
+      <button class="btn-primary" style="border-radius:10px;" onclick="openCart()">🧾 Submit / Checkout — <span id="checkoutCtaTotal">${money(cartTotal())}</span></button>
+    </div>`;
 }
 
-function stepQty(id, delta){
-  const cur = CART[id] || 0;
-  const next = Math.max(0, cur + delta);
-  if(next === 0) delete CART[id]; else CART[id] = next;
-  document.getElementById('qty-'+id).value = next;
-  const btn = document.getElementById('add-'+id);
-  if(btn){ btn.textContent = next ? 'In box ✓' : 'Add'; btn.classList.toggle('in-cart', !!next); }
+function setQty(id, val){
+  const n = Math.max(0, parseInt(val,10) || 0);
+  if(n === 0) delete CART[id]; else CART[id] = n;
+  const p = PRODUCTS.find(x=>x.id===id);
+  const amtCell = document.getElementById('amt-'+id);
+  if(amtCell) amtCell.textContent = (p && n) ? money(n*p.price) : '—';
+  const input = document.querySelector(`#row-${id} .col-qty input`);
+  if(input) input.value = n || '';
   updateCartBadge();
 }
-function addAtLeastOne(id){ if(!CART[id]) stepQty(id, 1); else openCart(); }
 function updateCartBadge(){
   const count = Object.values(CART).reduce((a,b)=>a+b,0);
   document.getElementById('cartCount').textContent = count;
+  const ctaTotal = document.getElementById('checkoutCtaTotal');
+  if(ctaTotal) ctaTotal.textContent = money(cartTotal());
 }
 
 // ---------- cart drawer ----------
@@ -548,7 +570,7 @@ function renderCartDrawer(){
   const footer = document.getElementById('cartFooter');
   const ids = Object.keys(CART);
   if(ids.length === 0){
-    itemsWrap.innerHTML = `<div class="empty-note">Your box is empty. Add some crackers from the catalog!</div>`;
+    itemsWrap.innerHTML = `<div class="empty-note">Your box is empty. Enter quantities in the price list to add items!</div>`;
     footer.innerHTML = ''; return;
   }
   itemsWrap.innerHTML = ids.map(id=>{
@@ -568,9 +590,10 @@ function renderCartDrawer(){
 }
 function removeFromCart(id){
   delete CART[id];
-  const qtyEl = document.getElementById('qty-'+id); if(qtyEl) qtyEl.value = 0;
-  const btn = document.getElementById('add-'+id);
-  if(btn){ btn.textContent='Add'; btn.classList.remove('in-cart'); }
+  const input = document.querySelector(`#row-${id} .col-qty input`);
+  if(input) input.value = '';
+  const amtCell = document.getElementById('amt-'+id);
+  if(amtCell) amtCell.textContent = '—';
   updateCartBadge(); renderCartDrawer();
 }
 
@@ -602,11 +625,8 @@ async function handleOrderSubmit(e){
     return { id, name:p?p.name:'Unknown', price:p?p.price:0, qty:CART[id] };
   });
   const order = {
-    customer: {
-      name: fd.get('name'), mobile: fd.get('mobile'), email: fd.get('email')||'',
-      address: fd.get('address'), city: fd.get('city'), state: fd.get('state')||''
-    },
-    items, total: cartTotal(), status: 'new'
+    customer:{ name:fd.get('name'), mobile:fd.get('mobile'), email:fd.get('email')||'', address:fd.get('address'), city:fd.get('city'), state:fd.get('state')||'' },
+    items, total: cartTotal(), status:'new'
   };
   btn.disabled = true; btn.textContent = 'Submitting…'; msgBox.innerHTML = '';
   try{
@@ -628,10 +648,21 @@ document.getElementById('openCartBtn').addEventListener('click', openCart);
 document.getElementById('closeCartBtn').addEventListener('click', closeCart);
 document.getElementById('cartOverlay').addEventListener('click', (e)=>{ if(e.target.id==='cartOverlay') closeCart(); });
 
+// ---------- product image popup ----------
+function openImagePopup(imgEl){
+  document.getElementById('imgPopupImage').src = imgEl.src;
+  document.getElementById('imgPopupCaption').textContent = imgEl.alt || '';
+  document.getElementById('imgPopupOverlay').classList.add('open');
+}
+function closeImagePopup(){ document.getElementById('imgPopupOverlay').classList.remove('open'); }
+document.getElementById('imgPopupClose').addEventListener('click', closeImagePopup);
+document.getElementById('imgPopupOverlay').addEventListener('click', (e)=>{ if(e.target.id==='imgPopupOverlay') closeImagePopup(); });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeImagePopup(); });
+
 // ---------- burst signature ----------
 function renderBurst(){
   const g = document.getElementById('burstGroup');
-  const colors = ['#f5a623','#ff4d6d','#37c7b3','#ffd27a'];
+  const colors = ['#f7c948','#e2231a','#c22a95','#ffe27a'];
   let html = '';
   [60,100,145].forEach((r, ri)=>{
     const count = 10 + ri*4;
@@ -643,7 +674,7 @@ function renderBurst(){
       html += `<circle class="burst-dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${2.5+ri*0.6}" fill="${color}" style="animation-delay:${delay}s"/>`;
     }
   });
-  html += `<circle cx="200" cy="200" r="6" fill="#ffd27a"/>`;
+  html += `<circle cx="200" cy="200" r="6" fill="#ffe27a"/>`;
   g.innerHTML = html;
 }
 
@@ -663,7 +694,7 @@ function renderAdminEntry(){
   root.innerHTML = `
   <div class="admin-panel">
     <div class="admin-head">
-      <h2 style="margin:0; font-size:20px;">Admin panel</h2>
+      <h2 style="margin:0; font-size:20px; color:var(--magenta);">Admin panel</h2>
       <div class="admin-tabs">
         <button class="admin-tab ${adminTab==='products'?'active':''}" onclick="setAdminTab('products')">Products</button>
         <button class="admin-tab ${adminTab==='orders'?'active':''}" onclick="setAdminTab('orders')">Orders</button>
@@ -692,12 +723,15 @@ function renderAdminBody(){
           <div class="field"><label>Product name <span class="req">*</span></label><input id="pfName" required></div>
           <div class="field">
             <label>Category <span class="req">*</span></label>
-            <input id="pfCategory" required list="catList" placeholder="e.g. Sparklers">
+            <input id="pfCategory" required list="catList" placeholder="e.g. Sparklers Product">
             <datalist id="catList">${categories().map(c=>`<option value="${c}">`).join('')}</datalist>
           </div>
+          <div class="field"><label>Per</label>
+            <select id="pfPer"><option>1 Box</option><option>1 Pkt</option><option>1 Pc</option><option>1 Set</option></select>
+          </div>
           <div style="display:flex; gap:10px;">
-            <div class="field" style="flex:1;"><label>MRP (₹)</label><input id="pfMrp" type="number" min="0" step="0.1"></div>
-            <div class="field" style="flex:1;"><label>Selling price (₹) <span class="req">*</span></label><input id="pfPrice" type="number" min="0" step="0.1" required></div>
+            <div class="field" style="flex:1;"><label>Actual price (₹)</label><input id="pfMrp" type="number" min="0" step="0.1"></div>
+            <div class="field" style="flex:1;"><label>Discount price (₹) <span class="req">*</span></label><input id="pfPrice" type="number" min="0" step="0.1" required></div>
           </div>
           <div id="productFormMsg"></div>
           <button type="submit" class="submit-btn">Save product to backend</button>
@@ -730,7 +764,7 @@ function renderAdminBody(){
             <tr>
               <td>${o.placedAt && o.placedAt.toDate ? o.placedAt.toDate().toLocaleString('en-IN') : '—'}</td>
               <td>${o.customer.name}<br><span class="pill-sm">${o.customer.city}${o.customer.state?', '+o.customer.state:''}</span></td>
-              <td>${o.customer.mobile}${o.customer.email?'<br>'+o.customer.email:''}<br><span style="font-size:11.5px;color:var(--ink-faint);">${o.customer.address}</span></td>
+              <td>${o.customer.mobile}${o.customer.email?'<br>'+o.customer.email:''}<br><span style="font-size:11.5px;color:#8a7aa0;">${o.customer.address}</span></td>
               <td>${o.items.map(it=>`${it.qty}× ${it.name}`).join('<br>')}</td>
               <td><b>${money(o.total)}</b></td>
             </tr>`).join('')}
@@ -785,19 +819,20 @@ async function handleProductSubmit(e){
   const msg = document.getElementById('productFormMsg');
   const name = document.getElementById('pfName').value.trim();
   const category = document.getElementById('pfCategory').value.trim();
+  const per = document.getElementById('pfPer').value;
   const price = parseFloat(document.getElementById('pfPrice').value);
   const mrp = parseFloat(document.getElementById('pfMrp').value) || price;
   if(!name || !category || isNaN(price)){
     msg.innerHTML = `<div class="error-box">Please fill in name, category and price.</div>`; return;
   }
   const maxCode = PRODUCTS.reduce((m,p)=>Math.max(m,p.code||0),0);
-  const product = { code:maxCode+1, category, name, price, mrp, img: pendingImageDataUrl || placeholderSvg(name, tintFor(category)) };
+  const product = { code:maxCode+1, category, name, per, price, mrp, img: pendingImageDataUrl || placeholderSvg(name, tintFor(category)) };
   const btn = e.target.querySelector('button[type=submit]');
   btn.disabled = true; btn.textContent = 'Saving…';
   try{
     const id = await addProductToBackend(product);
     PRODUCTS.push({ id, ...product });
-    msg.innerHTML = `<div class="success-box">"${name}" saved to the backend and is now live in the catalog.</div>`;
+    msg.innerHTML = `<div class="success-box">"${name}" saved to the backend and is now live in the price list.</div>`;
     e.target.reset(); pendingImageDataUrl = null;
     document.getElementById('imgPreview').style.display='none';
     document.getElementById('imgDropLabel').textContent = 'Click to upload product image (JPG/PNG)';
@@ -811,7 +846,7 @@ async function handleProductSubmit(e){
 }
 
 async function deleteProduct(id){
-  if(!confirm('Remove this product from the live catalog?')) return;
+  if(!confirm('Remove this product from the live price list?')) return;
   try{
     await deleteProductFromBackend(id);
     PRODUCTS = PRODUCTS.filter(p=>p.id!==id);
@@ -835,15 +870,13 @@ document.getElementById('loginForm').addEventListener('submit', async (e)=>{
   try{
     await auth.signInWithEmailAndPassword(fd.get('email'), fd.get('password'));
     toast('Signed in ✓');
-  }catch(err){
-    msg.innerHTML = `<div class="error-box">${err.message}</div>`;
-  }
+  }catch(err){ msg.innerHTML = `<div class="error-box">${err.message}</div>`; }
 });
 
 // ---------- init ----------
 async function init(){
   renderBurst();
-  document.getElementById('catalog').innerHTML = `<div class="loading-row">Loading catalog from backend…</div>`;
+  document.getElementById('catalog').innerHTML = `<div class="loading-row">Loading price list from backend…</div>`;
   await loadProducts();
   renderCatNav(); renderCatalog(); updateCartBadge();
 }
