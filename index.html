@@ -166,6 +166,7 @@
   .prod-row img{width:38px;height:38px;object-fit:cover;border-radius:6px;background:#f4ecd8;}
   .prod-row .pr-name{flex:1;}
   .del-btn{background:none;border:none;color:var(--red);font-size:12px; font-weight:700;}
+  .edit-btn{background:none;border:none;color:var(--magenta);font-size:12px; font-weight:700; margin-right:6px;}
   .toast{position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:100; background:var(--green); color:#fff; padding:10px 18px; border-radius:999px; font-size:13px; font-weight:700; box-shadow:var(--shadow); display:none;}
   .loading-row{color:#8a7aa0; font-size:13px; padding:20px 0; text-align:center;}
 
@@ -284,6 +285,35 @@
   <div class="order-detail-box">
     <div class="drawer-head"><h3>Order details</h3><button class="icon-btn" id="orderDetailClose">✕</button></div>
     <div id="orderDetailBody"></div>
+  </div>
+</div>
+
+<!-- Admin: edit product modal -->
+<div class="overlay center" id="editProductOverlay">
+  <div class="modal-box" style="max-height:88vh; overflow-y:auto;">
+    <div class="drawer-head"><h3>Edit product</h3><button class="icon-btn" id="editProductClose">✕</button></div>
+    <form id="editProductForm" style="display:flex; flex-direction:column; gap:12px;">
+      <div class="img-drop" id="editImgDrop">
+        <img id="editImgPreview" style="display:none;">
+        <span id="editImgDropLabel">Click to update product image (JPG/PNG)</span>
+        <input type="file" id="editImgInput" accept="image/*" style="display:none;">
+      </div>
+      <div class="field"><label>Product name <span class="req">*</span></label><input id="efName" required></div>
+      <div class="field">
+        <label>Category <span class="req">*</span></label>
+        <input id="efCategory" required list="editCatList">
+        <datalist id="editCatList"></datalist>
+      </div>
+      <div class="field"><label>Per</label>
+        <select id="efPer"><option>1 Box</option><option>1 Pkt</option><option>1 Pc</option><option>1 Set</option></select>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <div class="field" style="flex:1;"><label>Actual price (₹)</label><input id="efMrp" type="number" min="0" step="0.1"></div>
+        <div class="field" style="flex:1;"><label>Discount price (₹) <span class="req">*</span></label><input id="efPrice" type="number" min="0" step="0.1" required></div>
+      </div>
+      <div id="editProductMsg"></div>
+      <button type="submit" class="submit-btn">Save changes</button>
+    </form>
   </div>
 </div>
 
@@ -468,6 +498,7 @@ async function addProductToBackend(product){
   return ref.id;
 }
 async function deleteProductFromBackend(id){ await db.collection('products').doc(id).delete(); }
+async function updateProductInBackend(id, updates){ await db.collection('products').doc(id).update(updates); }
 async function saveOrderToBackend(order){
   await db.collection('orders').add({ ...order, placedAt: firebase.firestore.FieldValue.serverTimestamp() });
 }
@@ -727,8 +758,9 @@ function renderAdminBody(){
         <div style="max-height:520px; overflow-y:auto; border:1px solid var(--line); border-radius:10px; padding:4px 10px;">
           ${PRODUCTS.slice().reverse().map(p=>`
             <div class="prod-row">
-              <img src="${p.img}" alt="">
+              <img src="${p.img}" alt="" style="cursor:pointer;" onclick="openEditProduct('${p.id}')" title="Click to edit">
               <div class="pr-name">${p.name}<br><span class="pill-sm">${p.category}</span> <span class="pill-sm">${money(p.price)}</span></div>
+              <button class="edit-btn" onclick="openEditProduct('${p.id}')">Edit</button>
               <button class="del-btn" onclick="deleteProduct('${p.id}')">Remove</button>
             </div>`).join('') || '<div class="loading-row">No products yet.</div>'}
         </div>
@@ -890,6 +922,75 @@ async function deleteProduct(id){
     toast('Product removed');
   }catch(err){ console.error(err); toast('Could not remove product.'); }
 }
+
+// ---------- edit product (incl. image replace) ----------
+let editingProductId = null;
+let pendingEditImageDataUrl = null;
+
+function openEditProduct(id){
+  const p = PRODUCTS.find(x=>x.id===id);
+  if(!p) return;
+  editingProductId = id;
+  pendingEditImageDataUrl = null;
+  document.getElementById('efName').value = p.name;
+  document.getElementById('efCategory').value = p.category;
+  document.getElementById('efPer').value = p.per || '1 Box';
+  document.getElementById('efMrp').value = p.mrp || '';
+  document.getElementById('efPrice').value = p.price;
+  document.getElementById('editCatList').innerHTML = categories().map(c=>`<option value="${c}">`).join('');
+  const preview = document.getElementById('editImgPreview');
+  preview.src = p.img; preview.style.display = 'block';
+  document.getElementById('editImgDropLabel').textContent = 'Click to update product image (JPG/PNG)';
+  document.getElementById('editProductMsg').innerHTML = '';
+  document.getElementById('editProductOverlay').classList.add('open');
+}
+function closeEditProduct(){
+  document.getElementById('editProductOverlay').classList.remove('open');
+  editingProductId = null; pendingEditImageDataUrl = null;
+}
+document.getElementById('editProductClose').addEventListener('click', closeEditProduct);
+document.getElementById('editProductOverlay').addEventListener('click', (e)=>{ if(e.target.id==='editProductOverlay') closeEditProduct(); });
+
+document.getElementById('editImgDrop').addEventListener('click', ()=>document.getElementById('editImgInput').click());
+document.getElementById('editImgInput').addEventListener('change', (e)=>{
+  const file = e.target.files[0]; if(!file) return;
+  resizeImageToDataUrl(file, 480, 0.6).then(dataUrl=>{
+    pendingEditImageDataUrl = dataUrl;
+    const preview = document.getElementById('editImgPreview');
+    preview.src = dataUrl; preview.style.display = 'block';
+    document.getElementById('editImgDropLabel').textContent = 'Click to change image again';
+  }).catch(err=>{ console.error(err); toast('Could not read that image, try another file.'); });
+});
+
+document.getElementById('editProductForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  if(!editingProductId) return;
+  const msg = document.getElementById('editProductMsg');
+  const name = document.getElementById('efName').value.trim();
+  const category = document.getElementById('efCategory').value.trim();
+  const per = document.getElementById('efPer').value;
+  const price = parseFloat(document.getElementById('efPrice').value);
+  const mrp = parseFloat(document.getElementById('efMrp').value) || price;
+  if(!name || !category || isNaN(price)){
+    msg.innerHTML = `<div class="error-box">Please fill in name, category and price.</div>`; return;
+  }
+  const updates = { name, category, per, price, mrp };
+  if(pendingEditImageDataUrl) updates.img = pendingEditImageDataUrl;
+  const btn = e.target.querySelector('button[type=submit]');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try{
+    await updateProductInBackend(editingProductId, updates);
+    const idx = PRODUCTS.findIndex(p=>p.id===editingProductId);
+    if(idx !== -1) PRODUCTS[idx] = { ...PRODUCTS[idx], ...updates };
+    renderCatalog(); renderCatNav(); renderAdminBody();
+    toast('Product updated ✓');
+    closeEditProduct();
+  }catch(err){
+    console.error(err);
+    msg.innerHTML = `<div class="error-box">Update failed (${err.code||err.message}). Check you're signed in and Firestore rules allow writes.</div>`;
+  }
+  btn.disabled = false; btn.textContent = 'Save changes';
+});
 
 document.getElementById('adminLinkBtn').addEventListener('click', ()=>{
   if(adminAuthed){ document.getElementById('adminSection').scrollIntoView(); return; }
