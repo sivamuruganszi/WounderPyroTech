@@ -50,7 +50,7 @@
   }
   .brand-name{font-size:19px; font-weight:800; letter-spacing:.2px; color:var(--ink);}
   .brand-name span{color:var(--magenta);}
-  nav.mainnav{display:flex; gap:22px; font-size:14px; color:var(--ink);}
+  nav.mainnav{display:flex; gap:24px; font-size:16px; color:var(--ink); font-weight:700;}
   nav.mainnav a{text-decoration:none; padding:6px 0; border-bottom:2px solid transparent; transition:.2s;}
   nav.mainnav a:hover{color:var(--magenta); border-color:var(--magenta);}
   .topbar-actions{display:flex; align-items:center; gap:14px;}
@@ -89,7 +89,7 @@
   table.price-table{width:100%; border-collapse:collapse; min-width:720px;}
   table.price-table thead th{
     background:var(--red); color:#fff; font-size:12.5px; text-transform:uppercase; letter-spacing:.3px;
-    padding:12px 10px; text-align:left; border:1px solid #f4b0ab; position:sticky; top:var(--sticky-top, 112px); z-index:5;
+    padding:12px 10px; text-align:left; border:1px solid #f4b0ab;
   }
   table.price-table thead th.disc-th{color:var(--gold-2);}
   table.price-table thead th.center, table.price-table td.center{text-align:center;}
@@ -207,7 +207,7 @@
     <nav class="mainnav">
       <a href="#top">Home</a>
       <a href="#catalog">Price List</a>
-      <a href="#about">About</a>
+      <a href="about.html">About</a>
     </nav>
     <div class="topbar-actions">
       <div class="call-chip">📞 <b>77084 50260</b></div>
@@ -220,7 +220,7 @@
   <img class="hero-banner-img" src="hero-banner.jpg" alt="Wonder Pyro Tech — Price List 2026">
   <div class="hero-ctas">
     <button class="btn-primary" onclick="document.getElementById('catalog').scrollIntoView()">View price list</button>
-    <a class="btn-ghost" href="#about" style="text-decoration:none; display:inline-flex; align-items:center;">How ordering works</a>
+    <a class="btn-ghost" href="#contact" style="text-decoration:none; display:inline-flex; align-items:center;">How ordering works</a>
   </div>
 </section>
 
@@ -231,7 +231,7 @@
   <div id="adminSection"></div>
 </main>
 
-<footer id="about">
+<footer id="contact">
   <div class="footer-inner">
     <div style="max-width:420px;">
       <div class="brand" style="margin-bottom:10px;"><div class="brand-mark" style="width:28px;height:28px;font-size:13px;">🎆</div><b style="color:#fff;">Wonder Pyro Tech</b></div>
@@ -657,15 +657,6 @@ document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeImagePopu
 document.getElementById('orderDetailClose').addEventListener('click', closeOrderDetail);
 document.getElementById('orderDetailOverlay').addEventListener('click', (e)=>{ if(e.target.id==='orderDetailOverlay') closeOrderDetail(); });
 
-// ---------- sticky table-header offset (fixes header overlapping first row) ----------
-function updateStickyOffset(){
-  const topbar = document.querySelector('header.topbar');
-  const catnav = document.querySelector('.catnav');
-  const offset = (topbar ? topbar.offsetHeight : 0) + (catnav ? catnav.offsetHeight : 0);
-  document.documentElement.style.setProperty('--sticky-top', offset + 'px');
-}
-window.addEventListener('resize', updateStickyOffset);
-
 // ---------- ADMIN ----------
 let adminAuthed = false;
 let adminTab = 'products';
@@ -923,7 +914,6 @@ async function init(){
   document.getElementById('catalog').innerHTML = `<div class="loading-row">Loading price list from backend…</div>`;
   await loadProducts();
   renderCatNav(); renderCatalog(); updateCartBadge();
-  updateStickyOffset();
 }
 init();
 </script>

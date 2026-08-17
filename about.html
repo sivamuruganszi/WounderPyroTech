@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Us — Wonder Pyro Tech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700;900&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#170f2e;
+    --navy-2:#2a1552;
+    --cream:#fffaf0;
+    --card:#ffffff;
+    --red:#e2231a;
+    --red-dark:#b81d16;
+    --green:#1a9c4a;
+    --green-dark:#10692f;
+    --magenta:#8e1a6b;
+    --magenta-2:#c22a95;
+    --gold:#f7c948;
+    --gold-2:#ffe27a;
+    --ink:#1a2a6c;
+    --pink:#d6127a;
+    --line:#f0d9a8;
+    --shadow:0 14px 32px rgba(60,10,50,0.18);
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--cream); color:var(--ink); font-family:'Work Sans', sans-serif; -webkit-font-smoothing:antialiased;}
+  h1,h2,h3,.display{font-family:'Fraunces', serif;}
+  a{color:inherit;} img{max-width:100%;display:block;} button{font-family:inherit;cursor:pointer;}
+  ::selection{background:var(--gold); color:#241505;}
+
+  header.topbar{position:sticky; top:0; z-index:40; background:#ffffff; border-bottom:3px solid var(--magenta);}
+  .topbar-inner{max-width:1200px; margin:0 auto; padding:12px 22px; display:flex; align-items:center; justify-content:space-between; gap:18px;}
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{width:40px;height:40px;border-radius:10px; background:conic-gradient(from 180deg, var(--gold), var(--red), var(--magenta-2), var(--gold)); display:flex;align-items:center;justify-content:center;font-size:19px;}
+  .brand-name{font-size:19px; font-weight:800; letter-spacing:.2px; color:var(--ink);}
+  .brand-name span{color:var(--magenta);}
+  nav.mainnav{display:flex; gap:24px; font-size:16px; color:var(--ink); font-weight:700;}
+  nav.mainnav a{text-decoration:none; padding:6px 0; border-bottom:2px solid transparent; transition:.2s;}
+  nav.mainnav a:hover{color:var(--magenta); border-color:var(--magenta);}
+  nav.mainnav a.current{color:var(--magenta); border-color:var(--magenta);}
+  .topbar-actions{display:flex; align-items:center; gap:14px;}
+  .call-chip{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink); border:1px solid var(--line); padding:7px 12px; border-radius:999px;}
+  .call-chip b{color:var(--magenta); font-weight:700;}
+  .cart-btn{background:var(--gold); color:#241505; border:none; padding:9px 16px; border-radius:999px; font-weight:800; font-size:14px; text-decoration:none; display:inline-flex; align-items:center; gap:8px;}
+
+  .abt-hero{position:relative; background:linear-gradient(160deg, var(--navy) 0%, var(--navy-2) 100%); color:#fff; overflow:hidden;}
+  .abt-hero::before{
+    content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(247,201,72,.18) 0%, transparent 40%),
+      radial-gradient(circle at 85% 10%, rgba(194,42,149,.22) 0%, transparent 45%),
+      radial-gradient(circle at 50% 90%, rgba(226,35,26,.15) 0%, transparent 40%);
+  }
+  .abt-hero-inner{position:relative; max-width:900px; margin:0 auto; padding:64px 22px; text-align:center;}
+  .abt-eyebrow{display:inline-flex; align-items:center; gap:8px; font-size:12.5px; letter-spacing:1.8px; text-transform:uppercase; color:var(--gold-2); font-weight:700; margin-bottom:14px;}
+  .abt-eyebrow::before, .abt-eyebrow::after{content:"✦";}
+  .abt-hero h1{font-size:40px; margin:0 0 14px; font-weight:900;}
+  .abt-hero p{font-size:16.5px; color:#d8ccef; max-width:620px; margin:0 auto; line-height:1.65;}
+
+  main{max-width:960px; margin:0 auto; padding:48px 22px 30px;}
+  .abt-section{margin-bottom:52px;}
+  .abt-section h2{font-size:26px; margin:0 0 6px; color:var(--magenta);}
+  .abt-section .kicker{font-size:12.5px; text-transform:uppercase; letter-spacing:1.4px; color:var(--red-dark); font-weight:700; margin-bottom:8px;}
+  .abt-section p{font-size:15.5px; line-height:1.75; color:#3a3352; margin:0 0 14px;}
+  .abt-grid-2{display:grid; grid-template-columns:1.1fr 0.9fr; gap:36px; align-items:center;}
+  @media (max-width:760px){.abt-grid-2{grid-template-columns:1fr;}}
+  .abt-stat-card{background:#fff; border:1.5px solid var(--line); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow); text-align:center;}
+  .abt-stat-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+  @media (max-width:600px){.abt-stat-grid{grid-template-columns:1fr 1fr;}}
+  .abt-stat-num{font-family:'Fraunces',serif; font-size:32px; font-weight:800; color:var(--magenta);}
+  .abt-stat-label{font-size:12px; color:#7a6f8f; margin-top:4px; font-weight:600;}
+
+  .values-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px;}
+  @media (max-width:760px){.values-grid{grid-template-columns:1fr 1fr;}}
+  .value-card{background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:20px 16px; text-align:center;}
+  .value-card .ic{width:46px;height:46px;border-radius:50%; background:rgba(142,26,107,.08); border:1.5px solid var(--magenta); display:flex; align-items:center; justify-content:center; font-size:20px; margin:0 auto 10px;}
+  .value-card b{display:block; font-size:14px; margin-bottom:4px; color:var(--ink);}
+  .value-card span{font-size:12.5px; color:#7a6f8f; line-height:1.5;}
+
+  .frame-strip{background:linear-gradient(160deg, var(--magenta) 0%, var(--magenta-2) 100%); border-radius:18px; padding:3px; box-shadow:var(--shadow);}
+  .frame-strip-inner{background:#fff; border-radius:15px; padding:26px 28px;}
+  .cat-band-mini{background:var(--green); color:#fff; font-weight:800; font-size:13px; text-transform:uppercase; letter-spacing:.3px; padding:8px 14px; border-radius:8px; display:inline-block; margin-bottom:14px;}
+
+  .safety-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
+  .safety-list li{display:flex; gap:10px; font-size:14.5px; color:#3a3352; line-height:1.6;}
+  .safety-list li::before{content:"✓"; color:var(--green-dark); font-weight:800; flex:0 0 auto;}
+
+  .cta-band{background:var(--red); border-radius:18px; padding:34px 28px; text-align:center; color:#fff; margin-bottom:10px;}
+  .cta-band h2{color:#fff; margin:0 0 8px;}
+  .cta-band p{color:#ffe1de; margin:0 0 20px;}
+  .cta-btn{background:var(--gold); color:#241505; border:none; padding:13px 26px; border-radius:999px; font-weight:800; font-size:14.5px; text-decoration:none; display:inline-block;}
+
+  footer{border-top:4px solid var(--magenta); background:var(--navy); color:#e6def0; padding:36px 22px 60px;}
+  .footer-inner{max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:18px; font-size:12.5px;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">🎆</div>
+      <div class="brand-name">WONDER <span>PYRO TECH</span></div>
+    </div>
+    <nav class="mainnav">
+      <a href="index.html#top">Home</a>
+      <a href="index.html#catalog">Price List</a>
+      <a href="about.html" class="current">About</a>
+    </nav>
+    <div class="topbar-actions">
+      <div class="call-chip">📞 <b>77084 50260</b></div>
+      <a class="cart-btn" href="index.html#catalog">🧨 View Price List</a>
+    </div>
+  </div>
+</header>
+
+<section class="abt-hero">
+  <div class="abt-hero-inner">
+    <div class="abt-eyebrow">Our Story</div>
+    <h1>Lighting Up Celebrations Since Day One</h1>
+    <p>Wonder Pyro Tech is a wholesale fireworks supplier based in Sivakasi, Tamil Nadu — India's fireworks capital — bringing quality crackers and sky displays to families and retailers across the region at honest wholesale prices.</p>
+  </div>
+</section>
+
+<main>
+
+  <section class="abt-section">
+    <div class="abt-grid-2">
+      <div>
+        <div class="kicker">Who we are</div>
+        <h2>Built on a family tradition of craftsmanship</h2>
+        <p>Wonder Pyro Tech began as a small family-run stall supplying sparklers and one-sound crackers to neighbouring towns during Diwali season. Over the years, steady demand and word-of-mouth trust from retailers turned that stall into a full wholesale operation — today offering a catalog of 75+ products spanning sparklers, flower pots, ground chakkars, novelties, and multi-inch fancy sky-display shells.</p>
+        <p>We're still run the same way we started: directly from Sivakasi's manufacturing belt, with no unnecessary middlemen, so our partners get factory-fresh stock at genuine wholesale rates — not inflated retail markups.</p>
+      </div>
+      <div class="abt-stat-card">
+        <div class="abt-stat-grid">
+          <div><div class="abt-stat-num">75+</div><div class="abt-stat-label">Products in catalog</div></div>
+          <div><div class="abt-stat-num">11</div><div class="abt-stat-label">Product categories</div></div>
+          <div><div class="abt-stat-num">24h</div><div class="abt-stat-label">Dispatch window</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="abt-section">
+    <div class="kicker" style="text-align:center;">What we stand for</div>
+    <h2 style="text-align:center; margin-bottom:24px;">Our Values</h2>
+    <div class="values-grid">
+      <div class="value-card"><div class="ic">🏅</div><b>Best Quality</b><span>Every batch checked before it leaves our warehouse.</span></div>
+      <div class="value-card"><div class="ic">🛡️</div><b>Safe &amp; Reliable</b><span>Products sourced from licensed, compliant manufacturers.</span></div>
+      <div class="value-card"><div class="ic">✨</div><b>Brighter Celebrations</b><span>Curated displays for every festival, big or small.</span></div>
+      <div class="value-card"><div class="ic">🎁</div><b>Biggest Collection</b><span>From sparklers to 5" sky shells, all under one roof.</span></div>
+    </div>
+  </section>
+
+  <section class="abt-section">
+    <div class="frame-strip">
+      <div class="frame-strip-inner">
+        <div class="cat-band-mini">Safety &amp; Compliance</div>
+        <p style="margin-top:0;">Fireworks are a serious product, and we treat them that way. Here's what we commit to on every order:</p>
+        <ul class="safety-list">
+          <li>Stock sourced only from licensed, compliant fireworks manufacturers in Sivakasi.</li>
+          <li>Products packed and stored per standard explosive-safety handling guidelines.</li>
+          <li>Sale intended for licensed dealers, retailers, and adults, in line with local regulations on fireworks purchase and use.</li>
+          <li>Clear actual vs. discount pricing on every item — no hidden charges at checkout.</li>
+          <li>Orders confirmed personally over phone/WhatsApp before dispatch, so nothing ships without your sign-off.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="abt-section">
+    <div class="kicker">How we work with you</div>
+    <h2>Simple, transparent wholesale ordering</h2>
+    <p>Browse the full 2026 price list, enter the quantities you need directly into the table, and submit your order with your contact and delivery details. Our team reviews every order and reaches out on WhatsApp or phone to confirm quantities, finalize billing, and arrange dispatch — no surprises, no long back-and-forth.</p>
+  </section>
+
+  <section class="cta-band">
+    <h2>Ready to stock up for the season?</h2>
+    <p>Browse the full 2026 wholesale price list and place your order in minutes.</p>
+    <a class="cta-btn" href="index.html#catalog">View Price List</a>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div style="max-width:420px;">
+      <div class="brand" style="margin-bottom:10px;"><div class="brand-mark" style="width:28px;height:28px;font-size:13px;">🎆</div><b style="color:#fff;">Wonder Pyro Tech</b></div>
+      Wholesale fireworks supplier. Prices shown are indicative wholesale rates — final billing is confirmed by our team on WhatsApp/call after you submit an order. Sale to licensed adults only, where permitted by local regulation.
+    </div>
+    <div>
+      <div style="color:#fff; font-weight:700; margin-bottom:8px;">Store</div>
+      Sivakasi, Tamil Nadu, India<br>
+      Mon–Sun, 24 hours<br>
+      📞 77084 50260
+    </div>
+    <div><a href="index.html#catalog" style="color:var(--gold-2); font-size:12px; text-decoration:underline;">View Price List</a></div>
+  </div>
+</footer>
+
+</body>
+</html>
