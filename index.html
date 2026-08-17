@@ -38,8 +38,8 @@
 
   /* ---------- header ---------- */
   header.topbar{
-    position:sticky; top:0; z-index:40; background:var(--navy);
-    border-bottom:3px solid var(--gold);
+    position:sticky; top:0; z-index:40; background:#ffffff;
+    border-bottom:3px solid var(--magenta);
   }
   .topbar-inner{max-width:1200px; margin:0 auto; padding:12px 22px; display:flex; align-items:center; justify-content:space-between; gap:18px;}
   .brand{display:flex; align-items:center; gap:10px;}
@@ -48,43 +48,27 @@
     background:conic-gradient(from 180deg, var(--gold), var(--red), var(--magenta-2), var(--gold));
     display:flex;align-items:center;justify-content:center;font-size:19px;
   }
-  .brand-name{font-size:19px; font-weight:800; letter-spacing:.2px; color:#fff;}
-  .brand-name span{color:var(--gold);}
-  nav.mainnav{display:flex; gap:22px; font-size:14px; color:#e6def0;}
+  .brand-name{font-size:19px; font-weight:800; letter-spacing:.2px; color:var(--ink);}
+  .brand-name span{color:var(--magenta);}
+  nav.mainnav{display:flex; gap:22px; font-size:14px; color:var(--ink);}
   nav.mainnav a{text-decoration:none; padding:6px 0; border-bottom:2px solid transparent; transition:.2s;}
-  nav.mainnav a:hover{color:var(--gold); border-color:var(--gold);}
+  nav.mainnav a:hover{color:var(--magenta); border-color:var(--magenta);}
   .topbar-actions{display:flex; align-items:center; gap:14px;}
-  .call-chip{display:flex; align-items:center; gap:8px; font-size:13px; color:#f3ecff; border:1px solid rgba(255,255,255,.2); padding:7px 12px; border-radius:999px;}
-  .call-chip b{color:var(--gold-2); font-weight:700;}
+  .call-chip{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink); border:1px solid var(--line); padding:7px 12px; border-radius:999px;}
+  .call-chip b{color:var(--magenta); font-weight:700;}
   .cart-btn{
     position:relative; background:var(--gold); color:#241505; border:none;
     padding:9px 16px; border-radius:999px; font-weight:800; font-size:14px; display:flex; align-items:center; gap:8px;
   }
   .cart-badge{position:absolute; top:-7px; right:-7px; background:var(--red); color:#fff; font-size:11px; min-width:19px; height:19px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-weight:700;}
 
-  /* ---------- hero (cover-page style) ---------- */
-  .hero{position:relative; overflow:hidden; background:
-      radial-gradient(ellipse at 15% -10%, #3a1e66 0%, transparent 55%),
-      radial-gradient(ellipse at 90% 10%, #4a1440 0%, transparent 45%), var(--navy); color:#fff;}
-  .hero-inner{max-width:1200px; margin:0 auto; padding:56px 22px 40px; display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center;}
-  .eyebrow{display:inline-flex; align-items:center; gap:8px; font-size:12.5px; letter-spacing:1.6px; text-transform:uppercase; color:var(--gold-2); font-weight:700; margin-bottom:14px;}
-  .eyebrow::before{content:"✦";}
-  .hero h1{font-size:44px; line-height:1.06; margin:0 0 8px; font-weight:900;}
-  .hero h1 .wonder{background:linear-gradient(180deg, var(--gold-2), var(--gold)); -webkit-background-clip:text; background-clip:text; color:transparent;}
-  .hero .sub{font-size:19px; color:#d8ccef; margin:0 0 20px; font-weight:600;}
-  .hero p.lede{color:#c9bfe0; font-size:15.5px; max-width:480px; line-height:1.6; margin:0 0 22px;}
-  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:26px;}
+  /* ---------- hero (image banner) ---------- */
+  .hero{position:relative; background:#fff; padding:0 0 22px;}
+  .hero-banner-img{width:100%; display:block;}
+  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap; justify-content:center; padding:20px 22px 0;}
   .btn-primary{background:var(--red); color:#fff; border:none; padding:13px 24px; border-radius:999px; font-weight:800; font-size:14.5px; box-shadow:0 10px 24px rgba(226,35,26,.35);}
-  .btn-ghost{background:transparent; color:#fff; border:1px solid rgba(255,255,255,.35); padding:13px 22px; border-radius:999px; font-weight:700; font-size:14.5px;}
-  .badges-row{display:flex; gap:22px; flex-wrap:wrap;}
-  .badge-item{display:flex; align-items:center; gap:8px; font-size:12.5px; color:#e8e0f5; font-weight:600;}
-  .badge-item .ic{width:30px;height:30px;border-radius:50%;background:rgba(247,201,72,.15); border:1px solid var(--gold); display:flex;align-items:center;justify-content:center;font-size:14px;}
-
-  .burst-wrap{position:relative; aspect-ratio:1/1; max-width:380px; margin:0 auto;}
-  .burst-wrap svg{width:100%; height:100%;}
-  .burst-dot{transform-origin:200px 200px; animation:pop 2.6s ease-in-out infinite;}
-  @keyframes pop{0%,100%{opacity:.35; transform:scale(.85);} 50%{opacity:1; transform:scale(1.15);}}
-  @media (prefers-reduced-motion: reduce){ .burst-dot{animation:none;} }
+  .btn-ghost{background:transparent; color:var(--magenta); border:1.5px solid var(--magenta); padding:12px 22px; border-radius:999px; font-weight:700; font-size:14.5px;}
+  .btn-ghost:hover{background:var(--magenta); color:#fff;}
 
   /* ---------- category nav ---------- */
   .catnav{position:sticky; top:64px; z-index:30; background:#fff; border-bottom:2px solid var(--line);}
@@ -105,7 +89,7 @@
   table.price-table{width:100%; border-collapse:collapse; min-width:720px;}
   table.price-table thead th{
     background:var(--red); color:#fff; font-size:12.5px; text-transform:uppercase; letter-spacing:.3px;
-    padding:12px 10px; text-align:left; border:1px solid #f4b0ab; position:sticky; top:113px; z-index:5;
+    padding:12px 10px; text-align:left; border:1px solid #f4b0ab; position:sticky; top:var(--sticky-top, 112px); z-index:5;
   }
   table.price-table thead th.disc-th{color:var(--gold-2);}
   table.price-table thead th.center, table.price-table td.center{text-align:center;}
@@ -233,26 +217,10 @@
 </header>
 
 <section class="hero" id="top">
-  <div class="hero-inner">
-    <div>
-      <div class="eyebrow">Wholesale Fireworks · Sivakasi</div>
-      <h1><span class="wonder">WONDER</span> PYRO TECH</h1>
-      <p class="sub">Price List — 2026</p>
-      <p class="lede">Sparklers, one-sound crackers, flower pots, chakkars, fancy sky shots and repeating shots — full wholesale catalog with live discount pricing. Enter quantities right in the table and submit your order.</p>
-      <div class="hero-ctas">
-        <button class="btn-primary" onclick="document.getElementById('catalog').scrollIntoView()">View price list</button>
-        <a class="btn-ghost" href="#about" style="text-decoration:none; display:inline-flex; align-items:center;">How ordering works</a>
-      </div>
-      <div class="badges-row">
-        <div class="badge-item"><span class="ic">🏅</span>Best Quality</div>
-        <div class="badge-item"><span class="ic">🛡️</span>Safe &amp; Reliable</div>
-        <div class="badge-item"><span class="ic">✨</span>Brighter Celebrations</div>
-        <div class="badge-item"><span class="ic">🎁</span>Biggest Collection</div>
-      </div>
-    </div>
-    <div class="burst-wrap">
-      <svg viewBox="0 0 400 400"><g id="burstGroup"></g></svg>
-    </div>
+  <img class="hero-banner-img" src="hero-banner.jpg" alt="Wonder Pyro Tech — Price List 2026">
+  <div class="hero-ctas">
+    <button class="btn-primary" onclick="document.getElementById('catalog').scrollIntoView()">View price list</button>
+    <a class="btn-ghost" href="#about" style="text-decoration:none; display:inline-flex; align-items:center;">How ordering works</a>
   </div>
 </section>
 
@@ -689,24 +657,14 @@ document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeImagePopu
 document.getElementById('orderDetailClose').addEventListener('click', closeOrderDetail);
 document.getElementById('orderDetailOverlay').addEventListener('click', (e)=>{ if(e.target.id==='orderDetailOverlay') closeOrderDetail(); });
 
-// ---------- burst signature ----------
-function renderBurst(){
-  const g = document.getElementById('burstGroup');
-  const colors = ['#f7c948','#e2231a','#c22a95','#ffe27a'];
-  let html = '';
-  [60,100,145].forEach((r, ri)=>{
-    const count = 10 + ri*4;
-    for(let i=0;i<count;i++){
-      const angle = (i/count) * Math.PI * 2;
-      const x = 200 + Math.cos(angle)*r, y = 200 + Math.sin(angle)*r;
-      const color = colors[(i+ri)%colors.length];
-      const delay = ((i*37)%2600)/1000;
-      html += `<circle class="burst-dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${2.5+ri*0.6}" fill="${color}" style="animation-delay:${delay}s"/>`;
-    }
-  });
-  html += `<circle cx="200" cy="200" r="6" fill="#ffe27a"/>`;
-  g.innerHTML = html;
+// ---------- sticky table-header offset (fixes header overlapping first row) ----------
+function updateStickyOffset(){
+  const topbar = document.querySelector('header.topbar');
+  const catnav = document.querySelector('.catnav');
+  const offset = (topbar ? topbar.offsetHeight : 0) + (catnav ? catnav.offsetHeight : 0);
+  document.documentElement.style.setProperty('--sticky-top', offset + 'px');
 }
+window.addEventListener('resize', updateStickyOffset);
 
 // ---------- ADMIN ----------
 let adminAuthed = false;
@@ -962,10 +920,10 @@ document.getElementById('loginForm').addEventListener('submit', async (e)=>{
 
 // ---------- init ----------
 async function init(){
-  renderBurst();
   document.getElementById('catalog').innerHTML = `<div class="loading-row">Loading price list from backend…</div>`;
   await loadProducts();
   renderCatNav(); renderCatalog(); updateCartBadge();
+  updateStickyOffset();
 }
 init();
 </script>
