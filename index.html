@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wonder Pyro Tech — Price List 2026</title>
+<link rel="icon" type="image/png" href="logo-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700;900&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -41,13 +42,9 @@
     position:sticky; top:0; z-index:40; background:#ffffff;
     border-bottom:3px solid var(--magenta);
   }
-  .topbar-inner{max-width:1200px; margin:0 auto; padding:12px 22px; display:flex; align-items:center; justify-content:space-between; gap:18px;}
+  .topbar-inner{max-width:1200px; margin:0 auto; padding:10px 22px; display:flex; align-items:center; justify-content:space-between; gap:18px;}
   .brand{display:flex; align-items:center; gap:10px;}
-  .brand-mark{
-    width:40px;height:40px;border-radius:10px;
-    background:conic-gradient(from 180deg, var(--gold), var(--red), var(--magenta-2), var(--gold));
-    display:flex;align-items:center;justify-content:center;font-size:19px;
-  }
+  .brand-mark{width:52px; height:52px; object-fit:contain; display:block;}
   .brand-name{font-size:19px; font-weight:800; letter-spacing:.2px; color:var(--ink);}
   .brand-name span{color:var(--magenta);}
   nav.mainnav{display:flex; gap:24px; font-size:16px; color:var(--ink); font-weight:700;}
@@ -202,7 +199,7 @@
 <header class="topbar">
   <div class="topbar-inner">
     <div class="brand">
-      <div class="brand-mark">🎆</div>
+      <img class="brand-mark" src="logo-icon.png" alt="Wonder Pyro Tech logo">
       <div class="brand-name">WONDER <span>PYRO TECH</span></div>
     </div>
     <nav class="mainnav">
@@ -235,7 +232,7 @@
 <footer id="contact">
   <div class="footer-inner">
     <div style="max-width:420px;">
-      <div class="brand" style="margin-bottom:10px;"><div class="brand-mark" style="width:28px;height:28px;font-size:13px;">🎆</div><b style="color:#fff;">Wonder Pyro Tech</b></div>
+      <div class="brand" style="margin-bottom:10px;"><img class="brand-mark" src="logo-icon.png" alt="Wonder Pyro Tech logo" style="width:38px;height:38px;"><b style="color:#fff;">Wonder Pyro Tech</b></div>
       Wholesale fireworks supplier. Prices shown are indicative wholesale rates — final billing is confirmed by our team on WhatsApp/call after you submit an order. Sale to licensed adults only, where permitted by local regulation.
     </div>
     <div>
@@ -642,6 +639,25 @@ function renderCheckoutForm(){
   document.getElementById('checkoutForm').addEventListener('submit', handleOrderSubmit);
 }
 
+const ADMIN_WHATSAPP_NUMBER = '919884803554'; // 91 = India country code + 98848 03554 (business account)
+
+function buildWhatsAppOrderLink(order){
+  const lines = [];
+  lines.push('🧨 New order — Wonder Pyro Tech website');
+  lines.push('');
+  lines.push(`Name: ${order.customer.name}`);
+  lines.push(`Mobile: ${order.customer.mobile}`);
+  if(order.customer.email) lines.push(`Email: ${order.customer.email}`);
+  lines.push(`Address: ${order.customer.address}, ${order.customer.city}${order.customer.state ? ', '+order.customer.state : ''}`);
+  lines.push('');
+  lines.push('Items:');
+  order.items.forEach(it=>{ lines.push(`- ${it.qty} x ${it.name} = ${money(it.qty*it.price)}`); });
+  lines.push('');
+  lines.push(`Total: ${money(order.total)}`);
+  const text = encodeURIComponent(lines.join('\n'));
+  return `https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${text}`;
+}
+
 async function handleOrderSubmit(e){
   e.preventDefault();
   const btn = document.getElementById('submitOrderBtn');
@@ -658,9 +674,15 @@ async function handleOrderSubmit(e){
   btn.disabled = true; btn.textContent = 'Submitting…'; msgBox.innerHTML = '';
   try{
     await saveOrderToBackend(order);
-    msgBox.innerHTML = `<div class="success-box">Order placed! We'll contact you shortly on <b>${order.customer.mobile}</b> to confirm.</div>`;
+    const waLink = buildWhatsAppOrderLink(order);
+    const waWindow = window.open(waLink, '_blank');
+    msgBox.innerHTML = `
+      <div class="success-box">
+        Order placed! We'll contact you shortly on <b>${order.customer.mobile}</b> to confirm.<br><br>
+        ${waWindow ? "We've opened WhatsApp with your order details — just hit <b>Send</b> to notify us instantly." : ""}
+        <a href="${waLink}" target="_blank" rel="noopener" style="display:inline-block; margin-top:8px; background:#25D366; color:#fff; padding:9px 16px; border-radius:999px; font-weight:700; font-size:13px; text-decoration:none;">📲 ${waWindow ? 'Open WhatsApp again' : 'Send order via WhatsApp'}</a>
+      </div>`;
     CART = {}; updateCartBadge(); renderCatalog();
-    setTimeout(()=>{ closeCart(); }, 1800);
     toast('Order submitted to backend ✓');
   }catch(err){
     console.error(err);
