@@ -776,6 +776,14 @@ async function handleOrderSubmit(e){
       <div class="success-box">
         Order placed! We'll contact you shortly on <b>${order.customer.mobile}</b> to confirm.
       </div>`;
+    // Pre-existing bug, not introduced by the REST-fallback change: on the
+    // success path the button was never taken out of its "Submitting…"
+    // disabled state, so it stayed stuck that way forever even though the
+    // order had actually saved. The success message above already tells the
+    // customer what happened, so just hide the button rather than re-enable
+    // it (the cart is about to be cleared, so "Submit order — ₹0" would be a
+    // confusing thing to show next).
+    btn.style.display = 'none';
     CART = {}; updateCartBadge(); renderCatalog();
     toast('Order submitted to backend ✓');
   }catch(err){
