@@ -639,25 +639,6 @@ function renderCheckoutForm(){
   document.getElementById('checkoutForm').addEventListener('submit', handleOrderSubmit);
 }
 
-const ADMIN_WHATSAPP_NUMBER = '917708450260'; // 91 = India country code + 98848 03554 (business account)
-
-function buildWhatsAppOrderLink(order){
-  const lines = [];
-  lines.push('🧨 New order — Wonder Pyro Tech website');
-  lines.push('');
-  lines.push(`Name: ${order.customer.name}`);
-  lines.push(`Mobile: ${order.customer.mobile}`);
-  if(order.customer.email) lines.push(`Email: ${order.customer.email}`);
-  lines.push(`Address: ${order.customer.address}, ${order.customer.city}${order.customer.state ? ', '+order.customer.state : ''}`);
-  lines.push('');
-  lines.push('Items:');
-  order.items.forEach(it=>{ lines.push(`- ${it.qty} x ${it.name} = ${money(it.qty*it.price)}`); });
-  lines.push('');
-  lines.push(`Total: ${money(order.total)}`);
-  const text = encodeURIComponent(lines.join('\n'));
-  return `https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${text}`;
-}
-
 async function handleOrderSubmit(e){
   e.preventDefault();
   const btn = document.getElementById('submitOrderBtn');
@@ -674,13 +655,9 @@ async function handleOrderSubmit(e){
   btn.disabled = true; btn.textContent = 'Submitting…'; msgBox.innerHTML = '';
   try{
     await saveOrderToBackend(order);
-    const waLink = buildWhatsAppOrderLink(order);
-    const waWindow = window.open(waLink, '_blank');
     msgBox.innerHTML = `
       <div class="success-box">
-        Order placed! We'll contact you shortly on <b>${order.customer.mobile}</b> to confirm.<br><br>
-        ${waWindow ? "We've opened WhatsApp with your order details — just hit <b>Send</b> to notify us instantly." : ""}
-        <a href="${waLink}" target="_blank" rel="noopener" style="display:inline-block; margin-top:8px; background:#25D366; color:#fff; padding:9px 16px; border-radius:999px; font-weight:700; font-size:13px; text-decoration:none;">📲 ${waWindow ? 'Open WhatsApp again' : 'Send order via WhatsApp'}</a>
+        Order placed! We'll contact you shortly on <b>${order.customer.mobile}</b> to confirm.
       </div>`;
     CART = {}; updateCartBadge(); renderCatalog();
     toast('Order submitted to backend ✓');
