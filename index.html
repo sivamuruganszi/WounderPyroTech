@@ -639,6 +639,24 @@ function renderCheckoutForm(){
   document.getElementById('checkoutForm').addEventListener('submit', handleOrderSubmit);
 }
 
+// Cloudflare Worker that sends WhatsApp order notifications via Twilio.
+// Set this to the URL printed by `npx wrangler deploy` (see worker/README.md).
+const WHATSAPP_NOTIFY_URL = 'PASTE_YOUR_WORKER_URL_HERE';
+// Matches the Worker's SITE_KEY secret — a light abuse deterrent, not a real
+// credential (see worker/README.md for why that's fine here).
+const WHATSAPP_SITE_KEY = '92YXnpOoVajVqdYfWBM3lvj1K5oifai3';
+
+function notifyWhatsApp(order){
+  if(!WHATSAPP_NOTIFY_URL || WHATSAPP_NOTIFY_URL === 'PASTE_YOUR_WORKER_URL_HERE') return;
+  // Best-effort / fire-and-forget: the order is already safely saved in
+  // Firestore at this point, so a failure here shouldn't block checkout.
+  fetch(WHATSAPP_NOTIFY_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Site-Key': WHATSAPP_SITE_KEY },
+    body: JSON.stringify(order)
+  }).catch(err => console.warn('[whatsapp] notify failed (order still saved):', err));
+}
+
 async function handleOrderSubmit(e){
   e.preventDefault();
   const btn = document.getElementById('submitOrderBtn');
@@ -655,6 +673,7 @@ async function handleOrderSubmit(e){
   btn.disabled = true; btn.textContent = 'Submitting…'; msgBox.innerHTML = '';
   try{
     await saveOrderToBackend(order);
+    notifyWhatsApp(order);
     msgBox.innerHTML = `
       <div class="success-box">
         Order placed! We'll contact you shortly on <b>${order.customer.mobile}</b> to confirm.
