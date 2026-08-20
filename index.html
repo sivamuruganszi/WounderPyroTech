@@ -549,7 +549,11 @@ async function seedIfEmpty(){
 async function loadProducts(){
   if(CONFIG_IS_PLACEHOLDER){ PRODUCTS = []; return; }
   try{
-    const snap = await withTimeout(db.collection('products').orderBy('code').get(), 6000);
+    // {source:'server'} matters here: a plain .get() silently resolves with
+    // an empty *successful* snapshot from an empty local cache when the
+    // realtime channel can't reach the server — it does NOT reject, so the
+    // catch-and-fallback below would never trigger without this.
+    const snap = await withTimeout(db.collection('products').orderBy('code').get({ source: 'server' }), 6000);
     PRODUCTS = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     return;
   }catch(e){
