@@ -1,8 +1,25 @@
 // worker/src/index.js
 //
-// Cloudflare Worker: sends a WhatsApp order notification to the store owner
-// via Twilio, called directly from index.html right after an order is saved
-// to Firestore (see notifyWhatsApp() in index.html's handleOrderSubmit).
+// Cloudflare Worker: notifies the store owner of a new order — via WhatsApp
+// (Twilio) and SMS (Fast2SMS, fast2sms.com) — called directly from
+// index.html right after an order is saved to Firestore (see
+// notifyWhatsApp() in index.html's handleOrderSubmit).
+//
+// --- Why Fast2SMS, alongside WhatsApp ---
+// Two earlier SMS attempts (textbee.dev, then SMS Gateway for Android) both
+// used a spare Android phone as the SMS relay, and both failed the same
+// way: they depend on Firebase Cloud Messaging push notifications to wake
+// the phone's app, and on the phone actually having cellular signal at
+// that moment. Fast2SMS is different in kind, not just a different brand —
+// it's a real telecom-grade SMS gateway (an Indian bulk SMS provider) that
+// sends directly over the phone network from their own infrastructure.
+// There's no phone, no app, no battery optimization setting, no FCM token
+// to go stale. This should be materially more reliable than the previous
+// two attempts.
+//
+// Uses the "Quick SMS" route (route=q), which needs no DLT (India's SMS
+// regulatory registration) sender-ID/template approval — plain text,
+// works immediately after signup. Docs: https://docs.fast2sms.com/
 //
 // Why a Worker instead of a Firebase Cloud Function: Firebase's Firestore
 // triggers only run on the Blaze (pay-as-you-go) billing plan, which
@@ -53,6 +70,16 @@ function toE164(raw) {
   return `+${cleaned}`;
 }
 
+// Fast2SMS's "numbers" param wants a bare 10-digit Indian mobile number —
+// no "+91", no leading zero, no separators. Reuses toE164()'s cleanup then
+// strips back down to the last 10 digits.
+function toIndianNational(raw) {
+  const e164 = toE164(raw);
+  if (!e164) return null;
+  const digits = e164.replace(/\D/g, "");
+  return digits.slice(-10);
+}
+
 function money(n) {
   return `₹${Number(n || 0).toLocaleString("en-IN")}`;
 }
@@ -62,6 +89,40 @@ function money(n) {
 function truncate(str, max) {
   const s = String(str || "");
   return s.length > max ? s.slice(0, max - 1) + "…" : s;
+}
+
+// Fast2SMS "Quick SMS" route (route=q) — plain text, no DLT sender-ID
+// template registration needed, works immediately after signup. Docs:
+// https://docs.fast2sms.com/reference/quick-sms
+async function sendSmsViaFast2SMS(env, toPhoneNumber, message) {
+  if (!toPhoneNumber) return { skipped: true };
+  if (!env.FAST2SMS_API_KEY) {
+    console.error("[sms] FAST2SMS_API_KEY not set, skipping");
+    return { ok: false, error: "missing_api_key" };
+  }
+
+  const nationalNumber = toIndianNational(toPhoneNumber);
+  const url = new URL("https://www.fast2sms.com/dev/bulkV2");
+  url.searchParams.set("authorization", env.FAST2SMS_API_KEY);
+  url.searchParams.set("route", "q");
+  url.searchParams.set("message", message);
+  url.searchParams.set("numbers", nationalNumber);
+
+  const resp = await fetch(url.toString(), {
+    method: "GET",
+    headers: { Authorization: env.FAST2SMS_API_KEY },
+  });
+
+  const json = await resp.json().catch(() => null);
+
+  // Fast2SMS returns HTTP 200 even on failure — the real signal is the
+  // `return` boolean in the JSON body, not resp.ok.
+  if (!resp.ok || !json || json.return !== true) {
+    console.error("[sms] Fast2SMS error", resp.status, JSON.stringify(json));
+    return { ok: false, status: resp.status, response: json };
+  }
+  console.log(`[sms] sent to ${nationalNumber}, request_id: ${json.request_id}`);
+  return { ok: true, requestId: json.request_id };
 }
 
 async function sendWhatsAppTemplate(env, toPhoneNumber, contentVariables) {
@@ -156,8 +217,16 @@ export default {
       "2": truncate(`${totalFormatted} — ${order.customer.mobile || "N/A"}`, 80),
     };
 
+    // Plain-text SMS body for Fast2SMS (no template/variable constraints
+    // like WhatsApp's sandbox template has).
+    const smsMessage = truncate(
+      `New order: ${itemsSummary}. Total ${totalFormatted}. From ${order.customer.name || "Customer"} (${order.customer.mobile || "N/A"}).`,
+      600
+    );
+
     const results = await Promise.allSettled([
       sendWhatsAppTemplate(env, ownerPhone, ownerContentVariables),
+      sendSmsViaFast2SMS(env, env.OWNER_WHATSAPP_NUMBER, smsMessage),
     ]);
 
     return new Response(
