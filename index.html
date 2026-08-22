@@ -103,11 +103,11 @@
   td.col-per{color:var(--ink); font-weight:600; white-space:nowrap;}
   td.col-actual{color:var(--ink); font-weight:600; text-decoration:line-through; opacity:.75; white-space:nowrap;}
   td.col-disc{color:var(--red-dark); font-weight:800; white-space:nowrap;}
-  td.col-qty .qty-stepper{display:flex; align-items:center; justify-content:center; gap:4px;}
-  td.col-qty input{width:38px; padding:6px 4px; border:1.5px solid var(--line); border-radius:7px; font-size:13px; text-align:center; font-family:inherit;}
-  td.col-qty input:focus{outline:2px solid var(--gold); outline-offset:1px;}
-  td.col-qty .qty-btn{width:26px; height:26px; flex:0 0 auto; border:1.5px solid var(--line); border-radius:6px; background:#fff; color:var(--magenta); font-weight:800; font-size:16px; line-height:1; font-family:inherit; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;}
-  td.col-qty .qty-btn:active{background:var(--gold); border-color:var(--gold); color:var(--navy);}
+  .qty-stepper{display:flex; align-items:center; justify-content:center; gap:4px;}
+  .qty-stepper input{width:38px; padding:6px 4px; border:1.5px solid var(--line); border-radius:7px; font-size:13px; text-align:center; font-family:inherit;}
+  .qty-stepper input:focus{outline:2px solid var(--gold); outline-offset:1px;}
+  .qty-btn{width:26px; height:26px; flex:0 0 auto; border:1.5px solid var(--line); border-radius:6px; background:#fff; color:var(--magenta); font-weight:800; font-size:16px; line-height:1; font-family:inherit; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;}
+  .qty-btn:active{background:var(--gold); border-color:var(--gold); color:var(--navy);}
   td.col-amt{font-weight:800; color:var(--green-dark); white-space:nowrap;}
 
   .cat-head-title{padding:16px 18px 4px; font-size:13px; color:#8a7aa0;}
@@ -126,6 +126,8 @@
   .cart-item .ci-info{flex:1;}
   .cart-item .ci-name{font-size:13.5px; font-weight:700; color:var(--ink);}
   .cart-item .ci-price{font-size:12px; color:#7a6f8f; margin-top:2px;}
+  .cart-item .qty-stepper{justify-content:flex-start; margin-top:8px;}
+  .cart-item .ci-line-total{font-size:13px; font-weight:800; color:var(--green-dark); margin-top:6px;}
   .remove-link{font-size:11.5px; color:var(--red); background:none; border:none; padding:0; margin-top:6px; font-weight:700;}
   .cart-total-row{display:flex; justify-content:space-between; font-size:16px; font-weight:800; padding-top:6px; color:var(--magenta);}
   .empty-note{color:#8a7aa0; font-size:13.5px; text-align:center; padding:30px 0;}
@@ -254,6 +256,16 @@
     <div class="drawer-head"><h3>Your box</h3><button class="icon-btn" id="closeCartBtn">✕</button></div>
     <div id="cartItemsWrap"></div>
     <div id="cartFooter"></div>
+  </div>
+</div>
+
+<!-- Order placed confirmation popup -->
+<div class="overlay center" id="orderSuccessOverlay">
+  <div class="modal-box" style="align-items:center; text-align:center;">
+    <button class="icon-btn" id="orderSuccessClose" style="align-self:flex-end;" aria-label="Close">✕</button>
+    <div style="font-size:40px; line-height:1;">✅</div>
+    <h3 style="margin:0; color:var(--magenta); font-size:19px;">Order placed successfully!</h3>
+    <div id="orderSuccessMsg" style="font-size:13.5px; color:var(--ink); line-height:1.6;"></div>
   </div>
 </div>
 
@@ -682,10 +694,29 @@ function setQty(id, val){
   const input = document.querySelector(`#row-${id} .col-qty input`);
   if(input) input.value = n || '';
   updateCartBadge();
+  syncCartDrawerItem(id);
 }
 function stepQty(id, delta){
   const current = CART[id] || 0;
   setQty(id, current + delta);
+}
+// Keeps the "Your box" drawer's own qty/line-total/cart-total in sync
+// whenever a quantity changes, whether the change came from a stepper
+// inside the drawer itself or from the price-list row behind it.
+function syncCartDrawerItem(id){
+  const overlay = document.getElementById('cartOverlay');
+  if(!overlay || !overlay.classList.contains('open')) return;
+  if(!CART[id]){ renderCartDrawer(); return; }
+  const p = PRODUCTS.find(x=>x.id===id);
+  if(!p) return;
+  const input = document.querySelector(`#cart-item-${id} .qty-stepper input`);
+  if(input && input.value != CART[id]) input.value = CART[id];
+  const lineTotal = document.getElementById('ci-total-'+id);
+  if(lineTotal) lineTotal.textContent = money(CART[id]*p.price);
+  const cartTotalEl = document.querySelector('#cartFooter .cart-total-row span:last-child');
+  if(cartTotalEl) cartTotalEl.textContent = money(cartTotal());
+  const submitBtn = document.getElementById('submitOrderBtn');
+  if(submitBtn) submitBtn.textContent = `Submit order — ${money(cartTotal())}`;
 }
 function updateCartBadge(){
   const count = Object.values(CART).reduce((a,b)=>a+b,0);
@@ -711,11 +742,17 @@ function renderCartDrawer(){
   itemsWrap.innerHTML = ids.map(id=>{
     const p = PRODUCTS.find(x=>x.id===id); if(!p) return '';
     return `
-    <div class="cart-item">
+    <div class="cart-item" id="cart-item-${id}">
       <img src="${p.img}" alt="${p.name}">
       <div class="ci-info">
         <div class="ci-name">${p.name}</div>
-        <div class="ci-price">${CART[id]} × ${money(p.price)} = ${money(CART[id]*p.price)}</div>
+        <div class="ci-price">${money(p.price)} each</div>
+        <div class="qty-stepper">
+          <button type="button" class="qty-btn" onclick="stepQty('${id}', -1)" aria-label="Decrease quantity">−</button>
+          <input type="number" min="0" inputmode="numeric" value="${CART[id]}" oninput="setQty('${id}', this.value)">
+          <button type="button" class="qty-btn" onclick="stepQty('${id}', 1)" aria-label="Increase quantity">+</button>
+        </div>
+        <div class="ci-line-total" id="ci-total-${id}">${money(CART[id]*p.price)}</div>
         <button class="remove-link" onclick="removeFromCart('${id}')">Remove</button>
       </div>
     </div>`;
@@ -785,20 +822,13 @@ async function handleOrderSubmit(e){
   try{
     await saveOrderToBackend(order);
     notifyWhatsApp(order);
-    msgBox.innerHTML = `
-      <div class="success-box">
-        Order placed successfully! We'll contact you shortly on <b>${order.customer.mobile}</b> to confirm.
-      </div>`;
-    // Pre-existing bug, not introduced by the REST-fallback change: on the
-    // success path the button was never taken out of its "Submitting…"
-    // disabled state, so it stayed stuck that way forever even though the
-    // order had actually saved. The success message above already tells the
-    // customer what happened, so just hide the button rather than re-enable
-    // it (the cart is about to be cleared, so "Submit order — ₹0" would be a
-    // confusing thing to show next).
-    btn.style.display = 'none';
     CART = {}; updateCartBadge(); renderCatalog();
-    toast('Order submitted to backend ✓');
+    // Close the "Your box" drawer and show a centered confirmation popup
+    // (with its own close button) instead of an inline message inside the
+    // drawer — the drawer is about to be empty anyway since the cart was
+    // just cleared.
+    closeCart();
+    openOrderSuccess(order.customer.mobile);
   }catch(err){
     console.error(err);
     msgBox.innerHTML = `<div class="error-box">Something went wrong saving your order. Please try again.</div>`;
@@ -812,6 +842,15 @@ document.getElementById('openCartBtn').addEventListener('click', openCart);
 document.getElementById('closeCartBtn').addEventListener('click', closeCart);
 document.getElementById('cartOverlay').addEventListener('click', (e)=>{ if(e.target.id==='cartOverlay') closeCart(); });
 
+// ---------- order placed confirmation popup ----------
+function openOrderSuccess(mobile){
+  document.getElementById('orderSuccessMsg').innerHTML = `We'll contact you shortly on <b>${mobile}</b> to confirm.`;
+  document.getElementById('orderSuccessOverlay').classList.add('open');
+}
+function closeOrderSuccess(){ document.getElementById('orderSuccessOverlay').classList.remove('open'); }
+document.getElementById('orderSuccessClose').addEventListener('click', closeOrderSuccess);
+document.getElementById('orderSuccessOverlay').addEventListener('click', (e)=>{ if(e.target.id==='orderSuccessOverlay') closeOrderSuccess(); });
+
 // ---------- product image popup ----------
 function openImagePopup(imgEl){
   document.getElementById('imgPopupImage').src = imgEl.src;
@@ -821,7 +860,7 @@ function openImagePopup(imgEl){
 function closeImagePopup(){ document.getElementById('imgPopupOverlay').classList.remove('open'); }
 document.getElementById('imgPopupClose').addEventListener('click', closeImagePopup);
 document.getElementById('imgPopupOverlay').addEventListener('click', (e)=>{ if(e.target.id==='imgPopupOverlay') closeImagePopup(); });
-document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeImagePopup(); closeOrderDetail(); } });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeImagePopup(); closeOrderDetail(); closeOrderSuccess(); } });
 document.getElementById('orderDetailClose').addEventListener('click', closeOrderDetail);
 document.getElementById('orderDetailOverlay').addEventListener('click', (e)=>{ if(e.target.id==='orderDetailOverlay') closeOrderDetail(); });
 
