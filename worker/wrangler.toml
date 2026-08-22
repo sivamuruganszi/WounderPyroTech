@@ -1,0 +1,18 @@
+name = "wonderpyrotech-whatsapp"
+main = "src/index.js"
+compatibility_date = "2026-08-20"
+
+# Non-secret config. Secrets (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN,
+# TWILIO_WHATSAPP_FROM, OWNER_WHATSAPP_NUMBER, SITE_KEY, TEXTBEE_API_KEY,
+# and the optional TEXTBEE_DEVICE_ID) are set separately with
+# `wrangler secret put <NAME>` — see README.md — so they never end up in
+# this file or in git.
+[vars]
+ALLOWED_ORIGIN = "https://sivamuruganszi.github.io"
+
+# Twilio Content Template SID for the WhatsApp Sandbox's pre-approved
+# "Order Notifications" template. Not a secret — Content SIDs identify a
+# template, they don't grant access to anything. Swap this for your own
+# custom template's SID once a real WhatsApp Sender is approved (see the
+# comment block at the top of src/index.js).
+WHATSAPP_TEMPLATE_SID = "HXb5b62575e6e4ff6129ad7c8efe1f983e"
