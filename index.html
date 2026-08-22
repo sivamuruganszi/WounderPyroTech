@@ -768,7 +768,7 @@ async function handleOrderSubmit(e){
     customer:{ name:fd.get('name'), mobile:fd.get('mobile'), email:fd.get('email')||'', address:fd.get('address'), city:fd.get('city'), state:fd.get('state')||'' },
     items, total: cartTotal(), status:'new'
   };
-  btn.disabled = true; btn.textContent = 'Submitting…'; msgBox.innerHTML = '';
+  btn.disabled = true; msgBox.innerHTML = '';
   try{
     await saveOrderToBackend(order);
     notifyWhatsApp(order);
