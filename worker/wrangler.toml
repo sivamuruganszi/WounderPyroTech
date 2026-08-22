@@ -3,9 +3,9 @@ main = "src/index.js"
 compatibility_date = "2026-08-20"
 
 # Non-secret config. Secrets (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN,
-# TWILIO_WHATSAPP_FROM, OWNER_WHATSAPP_NUMBER, SITE_KEY) are set separately
-# with `wrangler secret put <NAME>` — see README.md — so they never end up
-# in this file or in git.
+# TWILIO_WHATSAPP_FROM, OWNER_WHATSAPP_NUMBER, SITE_KEY, SMS_GATEWAY_USERNAME,
+# SMS_GATEWAY_PASSWORD) are set separately with `wrangler secret put <NAME>`
+# — see README.md — so they never end up in this file or in git.
 [vars]
 ALLOWED_ORIGIN = "https://sivamuruganszi.github.io"
 
