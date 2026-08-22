@@ -1,9 +1,16 @@
-# Order WhatsApp notifications (Cloudflare Worker)
+# Order notifications (Cloudflare Worker)
 
-Sends a WhatsApp message via Twilio to the customer and to the store owner
-right after a customer checks out on the site. Free to run (Cloudflare
+Sends a WhatsApp message (via Twilio) and an SMS (via Fast2SMS) to the store
+owner right after a customer checks out on the site. Free to run (Cloudflare
 Workers' free plan — no credit card needed), unlike the Firebase Cloud
 Functions version this replaces.
+
+Two earlier SMS attempts (textbee.dev, then SMS Gateway for Android) relied
+on a spare Android phone as the SMS relay and both failed for phone-side
+reasons (a stale push token, then no cellular signal at send time). Fast2SMS
+is different in kind — it's a real Indian bulk SMS gateway that sends
+directly from its own infrastructure, so there's no phone, no app, and no
+push-token dependency involved.
 
 ## One-time setup
 
@@ -25,6 +32,11 @@ npx wrangler secret put SITE_KEY
 # ^ when prompted for SITE_KEY, paste this exact value: 92YXnpOoVajVqdYfWBM3lvj1K5oifai3
 #   (a random string I generated — not a real credential, just enough to stop
 #   casual/automated hits on the endpoint. It must match WHATSAPP_SITE_KEY in index.html.)
+
+npx wrangler secret put FAST2SMS_API_KEY
+# ^ get this from https://www.fast2sms.com/dashboard/dev-api after signing
+#   up (free, ₹50 credit included, no card needed). Copy the API key shown
+#   there and paste it when prompted.
 
 npx wrangler deploy
 ```
@@ -63,8 +75,14 @@ UI, or ask me to do it).
 ## After deploying
 
 Place a test order on the live site and check `npx wrangler tail` (streams
-live logs) for `[whatsapp] sent to ...` / `[whatsapp] Twilio error ...`
-lines.
+live logs) for these lines:
+- `[whatsapp] sent to ...` / `[whatsapp] Twilio error ...`
+- `[sms] sent to ..., request_id: ...` / `[sms] Fast2SMS error ...`
+
+If you see `[sms] FAST2SMS_API_KEY not set, skipping`, the secret above
+wasn't set — SMS is skipped, WhatsApp still sends normally either way
+(each notification channel is independent; one failing never blocks the
+other).
 
 ## The old Firebase Cloud Function
 
