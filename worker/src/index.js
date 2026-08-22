@@ -1,18 +1,8 @@
 // worker/src/index.js
 //
-// Cloudflare Worker: notifies the store owner of a new order — via WhatsApp
-// (Twilio) and SMS (textbee.dev) — called directly from index.html right
-// after an order is saved to Firestore (see notifyWhatsApp() in
-// index.html's handleOrderSubmit).
-//
-// --- Why SMS via textbee.dev, alongside WhatsApp ---
-// The WhatsApp path below only works because of the Twilio Sandbox
-// workaround (see comment further down) — it's a stopgap, not something
-// that's guaranteed to keep working. textbee.dev is simpler: it turns a
-// spare Android phone into an SMS gateway and exposes a plain REST API, no
-// template/approval process, no sandbox join step. It's used here as a
-// second, more reliable notification channel, not a replacement — if one
-// fails the other still gets through.
+// Cloudflare Worker: sends a WhatsApp order notification to the store owner
+// via Twilio, called directly from index.html right after an order is saved
+// to Firestore (see notifyWhatsApp() in index.html's handleOrderSubmit).
 //
 // Why a Worker instead of a Firebase Cloud Function: Firebase's Firestore
 // triggers only run on the Blaze (pay-as-you-go) billing plan, which
@@ -110,35 +100,6 @@ async function sendWhatsAppTemplate(env, toPhoneNumber, contentVariables) {
   return { ok: true, sid: json.sid };
 }
 
-// textbee.dev: plain SMS via a linked Android phone acting as the gateway.
-// No templates, no approval process — just a phone number and a message.
-// Docs: https://textbee.dev/docs/api-reference
-async function sendSmsViaTextbee(env, toPhoneNumber, message) {
-  if (!toPhoneNumber) return { skipped: true };
-  if (!env.TEXTBEE_API_KEY) return { skipped: true, reason: "no TEXTBEE_API_KEY set" };
-
-  const body = { recipients: [toPhoneNumber], message };
-  if (env.TEXTBEE_DEVICE_ID) body.deviceId = env.TEXTBEE_DEVICE_ID;
-
-  const resp = await fetch("https://api.textbee.dev/api/v1/gateway/send-sms", {
-    method: "POST",
-    headers: {
-      "x-api-key": env.TEXTBEE_API_KEY,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!resp.ok) {
-    const errText = await resp.text();
-    console.error("[sms] textbee error", resp.status, errText);
-    return { ok: false, status: resp.status };
-  }
-  const json = await resp.json();
-  console.log(`[sms] sent to ${toPhoneNumber}`);
-  return { ok: true, response: json };
-}
-
 export default {
   async fetch(request, env) {
     const corsHeaders = {
@@ -195,21 +156,8 @@ export default {
       "2": truncate(`${totalFormatted} — ${order.customer.mobile || "N/A"}`, 80),
     };
 
-    // SMS has no template restriction, so it can carry the full order
-    // summary as plain text. Sent to the same owner number as WhatsApp
-    // (OWNER_WHATSAPP_NUMBER doubles as the owner's SMS number here).
-    const ownerSmsMessage =
-      `New order — Wonder Pyro Tech\n` +
-      `Customer: ${order.customer.name || "N/A"}\n` +
-      `Mobile: ${order.customer.mobile || "N/A"}\n` +
-      `Address: ${order.customer.address || ""}, ${order.customer.city || ""}` +
-      `${order.customer.state ? ", " + order.customer.state : ""}\n` +
-      `Items: ${itemsSummary}\n` +
-      `Total: ${totalFormatted}`;
-
     const results = await Promise.allSettled([
       sendWhatsAppTemplate(env, ownerPhone, ownerContentVariables),
-      sendSmsViaTextbee(env, ownerPhone, ownerSmsMessage),
     ]);
 
     return new Response(
