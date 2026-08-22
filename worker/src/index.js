@@ -1,8 +1,26 @@
 // worker/src/index.js
 //
-// Cloudflare Worker: sends a WhatsApp order notification to the store owner
-// via Twilio, called directly from index.html right after an order is saved
-// to Firestore (see notifyWhatsApp() in index.html's handleOrderSubmit).
+// Cloudflare Worker: notifies the store owner of a new order — via WhatsApp
+// (Twilio) and SMS (SMS Gateway for Android, github.com/capcom6/android-sms-gateway)
+// — called directly from index.html right after an order is saved to
+// Firestore (see notifyWhatsApp() in index.html's handleOrderSubmit).
+//
+// --- Why SMS Gateway for Android, alongside WhatsApp ---
+// The WhatsApp path below only works because of the Twilio Sandbox
+// workaround (see comment further down) — a stopgap, not something
+// guaranteed to keep working. SMS Gateway for Android turns a spare
+// Android phone into an SMS relay via a REST API — simpler auth (plain
+// HTTP Basic, no template/approval process) than the WhatsApp path.
+//
+// Heads up: like every "phone as SMS gateway" app (this one included), it
+// depends on Firebase Cloud Messaging push notifications to wake the app
+// and trigger the send. If the phone's battery optimization kills the app
+// in the background, sends silently fail (see worker/README.md for the
+// fix). This was the exact failure mode hit with a previous SMS gateway
+// (textbee.dev) — this integration doesn't remove that class of risk, it's
+// just a different, better-documented gateway app. That's also why this
+// runs *alongside* WhatsApp rather than replacing it — if one channel goes
+// stale, the other still gets through.
 //
 // Why a Worker instead of a Firebase Cloud Function: Firebase's Firestore
 // triggers only run on the Blaze (pay-as-you-go) billing plan, which
@@ -100,6 +118,39 @@ async function sendWhatsAppTemplate(env, toPhoneNumber, contentVariables) {
   return { ok: true, sid: json.sid };
 }
 
+// SMS Gateway for Android (capcom6/android-sms-gateway): plain SMS via a
+// linked Android phone, relayed through the project's free public cloud
+// API. Auth is HTTP Basic using the username/password set in the Android
+// app itself (Settings → Cloud Server in the app). No templates, no
+// approval process. Docs: https://docs.sms-gate.app/integration/api/
+async function sendSmsViaGateway(env, toPhoneNumber, message) {
+  if (!toPhoneNumber) return { skipped: true };
+  if (!env.SMS_GATEWAY_USERNAME || !env.SMS_GATEWAY_PASSWORD) {
+    return { skipped: true, reason: "no SMS_GATEWAY_USERNAME/PASSWORD set" };
+  }
+
+  const resp = await fetch("https://api.sms-gate.app/3rdparty/v1/messages", {
+    method: "POST",
+    headers: {
+      Authorization: "Basic " + btoa(`${env.SMS_GATEWAY_USERNAME}:${env.SMS_GATEWAY_PASSWORD}`),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      phoneNumbers: [toPhoneNumber],
+      textMessage: { text: message },
+    }),
+  });
+
+  if (!resp.ok) {
+    const errText = await resp.text();
+    console.error("[sms] SMS Gateway error", resp.status, errText);
+    return { ok: false, status: resp.status };
+  }
+  const json = await resp.json();
+  console.log(`[sms] queued for ${toPhoneNumber}, id: ${json.id}`);
+  return { ok: true, id: json.id };
+}
+
 export default {
   async fetch(request, env) {
     const corsHeaders = {
@@ -156,8 +207,21 @@ export default {
       "2": truncate(`${totalFormatted} — ${order.customer.mobile || "N/A"}`, 80),
     };
 
+    // SMS has no template restriction, so it can carry the full order
+    // summary as plain text. Sent to the same owner number as WhatsApp
+    // (OWNER_WHATSAPP_NUMBER doubles as the owner's SMS number here).
+    const ownerSmsMessage =
+      `New order — Wonder Pyro Tech\n` +
+      `Customer: ${order.customer.name || "N/A"}\n` +
+      `Mobile: ${order.customer.mobile || "N/A"}\n` +
+      `Address: ${order.customer.address || ""}, ${order.customer.city || ""}` +
+      `${order.customer.state ? ", " + order.customer.state : ""}\n` +
+      `Items: ${itemsSummary}\n` +
+      `Total: ${totalFormatted}`;
+
     const results = await Promise.allSettled([
       sendWhatsAppTemplate(env, ownerPhone, ownerContentVariables),
+      sendSmsViaGateway(env, ownerPhone, ownerSmsMessage),
     ]);
 
     return new Response(
