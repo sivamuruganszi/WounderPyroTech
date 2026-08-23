@@ -1,65 +1,58 @@
 // worker/src/index.js
 //
-// Cloudflare Worker: notifies the store owner of a new order — via WhatsApp
-// (Twilio) and SMS (Fast2SMS, fast2sms.com) — called directly from
+// Cloudflare Worker: notifies the store owner of a new order — via SMS and
+// WhatsApp, both through Fast2SMS (fast2sms.com) — called directly from
 // index.html right after an order is saved to Firestore (see
 // notifyWhatsApp() in index.html's handleOrderSubmit).
 //
-// --- Why Fast2SMS, alongside WhatsApp ---
+// --- Why Fast2SMS for both channels ---
 // Two earlier SMS attempts (textbee.dev, then SMS Gateway for Android) both
 // used a spare Android phone as the SMS relay, and both failed the same
 // way: they depend on Firebase Cloud Messaging push notifications to wake
 // the phone's app, and on the phone actually having cellular signal at
 // that moment. Fast2SMS is different in kind, not just a different brand —
-// it's a real telecom-grade SMS gateway (an Indian bulk SMS provider) that
-// sends directly over the phone network from their own infrastructure.
-// There's no phone, no app, no battery optimization setting, no FCM token
-// to go stale. This should be materially more reliable than the previous
-// two attempts.
+// it's a real telecom-grade SMS/WhatsApp gateway (an Indian provider) that
+// sends directly from its own infrastructure. There's no phone, no app, no
+// battery optimization setting, no FCM token to go stale.
 //
-// Uses the "Quick SMS" route (route=q), which needs no DLT (India's SMS
-// regulatory registration) sender-ID/template approval — plain text,
-// works immediately after signup. Docs: https://docs.fast2sms.com/
+// WhatsApp here used to go through Twilio's WhatsApp Sandbox with a
+// repurposed built-in template, but that setup broke (error 21655,
+// "ContentSid Invalid" — the sandbox's template SID stopped resolving) and
+// needed its own separate Twilio account/ContentSid to fix. Consolidating
+// onto Fast2SMS means one vendor, one API key, for both SMS and WhatsApp.
+//
+// SMS uses the "Quick SMS" route (route=q), which needs no DLT (India's SMS
+// regulatory registration) sender-ID/template approval — plain text, works
+// immediately after signup. See sendSmsViaFast2SMS() below; this part is
+// unchanged and already working once FAST2SMS_API_KEY is set.
+//
+// WhatsApp is template-based (same requirement WhatsApp always has for
+// business-initiated messages) and needs two one-time setup steps in your
+// Fast2SMS panel that this code can't do for you:
+//   1. Connect a WhatsApp Business number (WABA) — WhatsApp API section of
+//      the dashboard.
+//   2. Create and get approved a template with exactly ONE variable in its
+//      body, e.g.: "New order alert: {{1}}" (approval isn't instant).
+// Once approved, the panel shows a numeric message_id for that template and
+// a phone_number_id for your connected WABA number — set those as
+// FAST2SMS_WHATSAPP_MESSAGE_ID / FAST2SMS_WHATSAPP_PHONE_NUMBER_ID (see
+// worker/README.md). Until both are set, sendWhatsAppViaFast2SMS() just
+// skips — it's fully independent of the SMS send, so SMS keeps working
+// whether or not WhatsApp is configured yet.
+// Docs: https://docs.fast2sms.com/reference/sendwhatsappmessage
 //
 // Why a Worker instead of a Firebase Cloud Function: Firebase's Firestore
 // triggers only run on the Blaze (pay-as-you-go) billing plan, which
 // requires adding a card to the Firebase project even though usage here
 // would stay well within the free quota. Cloudflare Workers' free plan
 // needs no card and comfortably covers a small storefront (100,000
-// requests/day; outbound calls to Twilio aren't metered at all).
+// requests/day; outbound calls to Fast2SMS aren't metered separately).
 //
 // Trade-off vs. the Firestore-trigger approach: this only fires because
 // index.html calls it right after saving the order. If a customer's
 // browser/tab closes in the instant between "order saved" and "this
-// request sent", that one order's WhatsApp notification would be missed
-// (the order itself is still safely in Firestore either way).
-//
-// --- Why this uses a template instead of plain text ---
-// WhatsApp requires any business-initiated message (one the customer didn't
-// ask for by messaging first) to use a pre-approved template — plain text
-// gets rejected with error 21654 "ContentSid Required". Getting a *custom*
-// template approved requires registering a real WhatsApp Sender, which
-// means connecting a Meta Business Manager account and going through
-// Meta's business verification — that can take a while.
-//
-// As a stopgap, this uses Twilio's WhatsApp *Sandbox* (a free testing
-// environment, no Meta approval needed) and one of its built-in
-// pre-approved templates ("Order Notifications"):
-//   "Thank you for your order. Your delivery is scheduled for {{1}} at {{2}}."
-// Two catches with the sandbox:
-//   1. It only delivers to phone numbers that have manually sent the
-//      sandbox's "join <code>" message on WhatsApp first — fine for
-//      notifying yourself as the owner, not usable for real customers.
-//      That's why this only sends to OWNER_WHATSAPP_NUMBER for now.
-//   2. The template's only two variables were designed for a delivery
-//      date/time, not order details — they're repurposed below to carry a
-//      compact order summary instead of their literal date/time meaning.
-//
-// Once a real WhatsApp Sender is approved (see worker/README.md), swap
-// WHATSAPP_TEMPLATE_SID for your own custom template's SID, update the
-// ContentVariables below to match its real variables, set
-// TWILIO_WHATSAPP_FROM back to your approved number, and re-enable sending
-// to the customer too.
+// request sent", that one order's notifications would be missed (the
+// order itself is still safely in Firestore either way).
 
 function toE164(raw) {
   if (!raw) return null;
@@ -78,6 +71,14 @@ function toIndianNational(raw) {
   if (!e164) return null;
   const digits = e164.replace(/\D/g, "");
   return digits.slice(-10);
+}
+
+// Fast2SMS's WhatsApp "numbers" param wants the number WITH country code
+// but no "+" (e.g. "919999999999"), unlike the SMS route above.
+function toFast2SMSWhatsAppNumber(raw) {
+  const e164 = toE164(raw);
+  if (!e164) return null;
+  return e164.replace(/^\+/, "");
 }
 
 function money(n) {
@@ -125,40 +126,46 @@ async function sendSmsViaFast2SMS(env, toPhoneNumber, message) {
   return { ok: true, requestId: json.request_id };
 }
 
-async function sendWhatsAppTemplate(env, toPhoneNumber, contentVariables) {
+// Fast2SMS WhatsApp Template Message API. See the header comment above for
+// the one-time panel setup (WABA connection + approved template) this
+// depends on. Reuses FAST2SMS_API_KEY — no separate credential needed.
+// Docs: https://docs.fast2sms.com/reference/sendwhatsappmessage
+async function sendWhatsAppViaFast2SMS(env, toPhoneNumber, messageText) {
   if (!toPhoneNumber) return { skipped: true };
+  if (!env.FAST2SMS_API_KEY) {
+    console.error("[whatsapp] FAST2SMS_API_KEY not set, skipping");
+    return { ok: false, error: "missing_api_key" };
+  }
+  if (!env.FAST2SMS_WHATSAPP_MESSAGE_ID || !env.FAST2SMS_WHATSAPP_PHONE_NUMBER_ID) {
+    // Not configured yet — this is expected until the WABA number + template
+    // are approved in the Fast2SMS panel. Not an error; SMS is unaffected.
+    console.log("[whatsapp] Fast2SMS WhatsApp not configured yet (missing message_id/phone_number_id), skipping");
+    return { skipped: true };
+  }
 
-  const from = env.TWILIO_WHATSAPP_FROM.startsWith("whatsapp:")
-    ? env.TWILIO_WHATSAPP_FROM
-    : `whatsapp:${env.TWILIO_WHATSAPP_FROM}`;
+  const whatsappNumber = toFast2SMSWhatsAppNumber(toPhoneNumber);
+  const url = new URL("https://www.fast2sms.com/dev/whatsapp");
+  url.searchParams.set("message_id", env.FAST2SMS_WHATSAPP_MESSAGE_ID);
+  url.searchParams.set("phone_number_id", env.FAST2SMS_WHATSAPP_PHONE_NUMBER_ID);
+  url.searchParams.set("numbers", whatsappNumber);
+  url.searchParams.set("variables_values", messageText);
 
-  const body = new URLSearchParams({
-    From: from,
-    To: `whatsapp:${toPhoneNumber}`,
-    ContentSid: env.WHATSAPP_TEMPLATE_SID,
-    ContentVariables: JSON.stringify(contentVariables),
+  const resp = await fetch(url.toString(), {
+    method: "GET",
+    headers: { Authorization: env.FAST2SMS_API_KEY },
   });
 
-  const resp = await fetch(
-    `https://api.twilio.com/2010-04-01/Accounts/${env.TWILIO_ACCOUNT_SID}/Messages.json`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: "Basic " + btoa(`${env.TWILIO_ACCOUNT_SID}:${env.TWILIO_AUTH_TOKEN}`),
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body,
-    }
-  );
+  const json = await resp.json().catch(() => null);
 
-  if (!resp.ok) {
-    const errText = await resp.text();
-    console.error("[whatsapp] Twilio error", resp.status, errText);
-    return { ok: false, status: resp.status };
+  // Fast2SMS's documented success field for this endpoint is `status`
+  // (unlike bulkV2's `return`) — checking resp.ok too as a fallback since
+  // Fast2SMS's docs are thin on the exact error shape here.
+  if (!resp.ok || !json || (json.status !== true && json.return !== true)) {
+    console.error("[whatsapp] Fast2SMS error", resp.status, JSON.stringify(json));
+    return { ok: false, status: resp.status, response: json };
   }
-  const json = await resp.json();
-  console.log(`[whatsapp] sent to ${toPhoneNumber}, SID: ${json.sid}`);
-  return { ok: true, sid: json.sid };
+  console.log(`[whatsapp] sent to ${whatsappNumber}, request_id: ${json.request_id}`);
+  return { ok: true, requestId: json.request_id };
 }
 
 export default {
@@ -207,26 +214,18 @@ export default {
     const itemsSummary = order.items.map((it) => `${it.qty}x ${it.name}`).join(", ");
     const totalFormatted = money(order.total);
 
-    // Repurposing the sandbox "Order Notifications" template's two
-    // variables (originally meant for a delivery date/time) to carry a
-    // compact order summary instead, since it's the only pre-approved
-    // template available without a full WhatsApp Sender registration.
-    const ownerPhone = toE164(env.OWNER_WHATSAPP_NUMBER);
-    const ownerContentVariables = {
-      "1": truncate(`${order.customer.name || "Customer"} — ${itemsSummary}`, 120),
-      "2": truncate(`${totalFormatted} — ${order.customer.mobile || "N/A"}`, 80),
-    };
-
-    // Plain-text SMS body for Fast2SMS (no template/variable constraints
-    // like WhatsApp's sandbox template has).
-    const smsMessage = truncate(
+    // Shared order-summary text for both channels. SMS sends this as
+    // plain text; WhatsApp passes it as the single {{1}} variable of the
+    // approved template (see the header comment for that template's
+    // expected shape).
+    const orderMessage = truncate(
       `New order: ${itemsSummary}. Total ${totalFormatted}. From ${order.customer.name || "Customer"} (${order.customer.mobile || "N/A"}).`,
       600
     );
 
     const results = await Promise.allSettled([
-      sendWhatsAppTemplate(env, ownerPhone, ownerContentVariables),
-      sendSmsViaFast2SMS(env, env.OWNER_WHATSAPP_NUMBER, smsMessage),
+      sendSmsViaFast2SMS(env, env.OWNER_WHATSAPP_NUMBER, orderMessage),
+      sendWhatsAppViaFast2SMS(env, env.OWNER_WHATSAPP_NUMBER, orderMessage),
     ]);
 
     return new Response(
