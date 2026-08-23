@@ -2,16 +2,18 @@ name = "wonderpyrotech-whatsapp"
 main = "src/index.js"
 compatibility_date = "2026-08-20"
 
-# Non-secret config. Secrets (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN,
-# TWILIO_WHATSAPP_FROM, OWNER_WHATSAPP_NUMBER, SITE_KEY, FAST2SMS_API_KEY)
-# are set separately with `wrangler secret put <NAME>` — see README.md —
-# so they never end up in this file or in git.
+# Non-secret config. Secrets (OWNER_WHATSAPP_NUMBER, SITE_KEY,
+# FAST2SMS_API_KEY) are set separately with `wrangler secret put <NAME>` —
+# see README.md — so they never end up in this file or in git.
 [vars]
 ALLOWED_ORIGIN = "https://sivamuruganszi.github.io"
 
-# Twilio Content Template SID for the WhatsApp Sandbox's pre-approved
-# "Order Notifications" template. Not a secret — Content SIDs identify a
-# template, they don't grant access to anything. Swap this for your own
-# custom template's SID once a real WhatsApp Sender is approved (see the
-# comment block at the top of src/index.js).
-WHATSAPP_TEMPLATE_SID = "HXb5b62575e6e4ff6129ad7c8efe1f983e"
+# Fast2SMS WhatsApp template identifiers. Not secrets — like the old
+# WHATSAPP_TEMPLATE_SID, these just identify a template/number, they don't
+# grant access to anything on their own (FAST2SMS_API_KEY does that).
+# Leave these blank until you've connected a WhatsApp Business number and
+# gotten a template approved in the Fast2SMS panel — see worker/README.md.
+# WhatsApp sending is skipped (not an error) while either is blank; SMS is
+# unaffected either way.
+FAST2SMS_WHATSAPP_MESSAGE_ID = ""
+FAST2SMS_WHATSAPP_PHONE_NUMBER_ID = ""
