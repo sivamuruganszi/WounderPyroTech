@@ -23,8 +23,15 @@
 //
 // SMS uses the "Quick SMS" route (route=q), which needs no DLT (India's SMS
 // regulatory registration) sender-ID/template approval — plain text, works
-// immediately after signup. See sendSmsViaFast2SMS() below; this part is
-// unchanged and already working once FAST2SMS_API_KEY is set.
+// immediately after signup. See sendSmsViaFast2SMS() below.
+//
+// The SMS body intentionally leaves out the item list — Fast2SMS bills
+// Quick SMS per segment (~160 GSM-7 characters, or ~70 if any character
+// forces UCS-2 encoding), so a full item list can push one order's SMS into
+// 2-3 billed segments. SMS just says an order came in and the total; the
+// full item list still goes out over WhatsApp, which is priced per message
+// rather than per character. See the smsMessage/whatsappMessage split in
+// the fetch handler below.
 //
 // WhatsApp is template-based (same requirement WhatsApp always has for
 // business-initiated messages) and needs two one-time setup steps in your
@@ -214,18 +221,31 @@ export default {
     const itemsSummary = order.items.map((it) => `${it.qty}x ${it.name}`).join(", ");
     const totalFormatted = money(order.total);
 
-    // Shared order-summary text for both channels. SMS sends this as
-    // plain text; WhatsApp passes it as the single {{1}} variable of the
-    // approved template (see the header comment for that template's
-    // expected shape).
-    const orderMessage = truncate(
+    // SMS-only summary — deliberately short, with NO item list. Fast2SMS's
+    // Quick SMS route is billed per SMS "segment" (roughly per 160
+    // characters), so a long message with the full item list can silently
+    // become 2-3 billed segments per order. This also uses "Rs." instead of
+    // "₹" on purpose: the ₹ symbol isn't in the GSM-7 character set, so
+    // including it would force the whole message into UCS-2 encoding, which
+    // cuts the single-segment limit from 160 characters down to 70 — "Rs."
+    // keeps this comfortably inside one segment.
+    const smsMessage = truncate(
+      `New order received! Total Rs.${Number(order.total || 0).toLocaleString("en-IN")}. From ${order.customer.name || "Customer"} (${order.customer.mobile || "N/A"}).`,
+      160
+    );
+
+    // Full order-summary text, WhatsApp only, passed as the single {{1}}
+    // variable of the approved template. WhatsApp (Fast2SMS) is priced per
+    // message, not per character, so there's no cost reason to shorten this
+    // one — keep the item list for the owner's benefit.
+    const whatsappMessage = truncate(
       `New order: ${itemsSummary}. Total ${totalFormatted}. From ${order.customer.name || "Customer"} (${order.customer.mobile || "N/A"}).`,
       600
     );
 
     const results = await Promise.allSettled([
-      sendSmsViaFast2SMS(env, env.OWNER_WHATSAPP_NUMBER, orderMessage),
-      sendWhatsAppViaFast2SMS(env, env.OWNER_WHATSAPP_NUMBER, orderMessage),
+      sendSmsViaFast2SMS(env, env.OWNER_WHATSAPP_NUMBER, smsMessage),
+      sendWhatsAppViaFast2SMS(env, env.OWNER_WHATSAPP_NUMBER, whatsappMessage),
     ]);
 
     return new Response(
