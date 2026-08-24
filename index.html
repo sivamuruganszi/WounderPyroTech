@@ -33,6 +33,10 @@
     margin:0; background:var(--cream); color:var(--ink);
     font-family:'Work Sans', sans-serif; -webkit-font-smoothing:antialiased;
   }
+  /* Locks the background page from scrolling while any cart/modal overlay is
+     open (added because scrolling inside the cart drawer was also scrolling
+     the page behind it). Toggled by lockBodyScroll()/unlockBodyScroll(). */
+  body.no-scroll{overflow:hidden; height:100%;}
   h1,h2,h3,.display{font-family:'Fraunces', serif;}
   a{color:inherit;} img{max-width:100%;display:block;} button{font-family:inherit;cursor:pointer;}
   ::selection{background:var(--gold); color:#241505;}
@@ -103,11 +107,8 @@
   td.col-per{color:var(--ink); font-weight:600; white-space:nowrap;}
   td.col-actual{color:var(--ink); font-weight:600; text-decoration:line-through; opacity:.75; white-space:nowrap;}
   td.col-disc{color:var(--red-dark); font-weight:800; white-space:nowrap;}
-  .qty-stepper{display:flex; align-items:center; justify-content:center; gap:4px;}
-  .qty-stepper input{width:38px; padding:6px 4px; border:1.5px solid var(--line); border-radius:7px; font-size:13px; text-align:center; font-family:inherit;}
-  .qty-stepper input:focus{outline:2px solid var(--gold); outline-offset:1px;}
-  .qty-btn{width:26px; height:26px; flex:0 0 auto; border:1.5px solid var(--line); border-radius:6px; background:#fff; color:var(--magenta); font-weight:800; font-size:16px; line-height:1; font-family:inherit; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;}
-  .qty-btn:active{background:var(--gold); border-color:var(--gold); color:var(--navy);}
+  td.col-qty input{width:56px; padding:6px 7px; border:1.5px solid var(--line); border-radius:7px; font-size:13px; text-align:center; font-family:inherit;}
+  td.col-qty input:focus{outline:2px solid var(--gold); outline-offset:1px;}
   td.col-amt{font-weight:800; color:var(--green-dark); white-space:nowrap;}
 
   .cat-head-title{padding:16px 18px 4px; font-size:13px; color:#8a7aa0;}
@@ -116,8 +117,8 @@
   .overlay{position:fixed; inset:0; background:rgba(20,8,30,.55); backdrop-filter:blur(3px); z-index:80; display:none; align-items:stretch; justify-content:flex-end;}
   .overlay.open{display:flex;}
   .overlay.center{align-items:center; justify-content:center;}
-  .drawer{width:min(440px, 100%); background:var(--cream); height:100%; overflow-y:auto; border-left:4px solid var(--magenta); padding:22px; display:flex; flex-direction:column; gap:16px;}
-  .modal-box{width:min(360px, 92vw); background:var(--cream); border:3px solid var(--magenta); border-radius:16px; padding:26px; display:flex; flex-direction:column; gap:14px;}
+  .drawer{width:min(440px, 100%); background:var(--cream); height:100%; overflow-y:auto; overscroll-behavior:contain; border-left:4px solid var(--magenta); padding:22px; display:flex; flex-direction:column; gap:16px;}
+  .modal-box{width:min(360px, 92vw); background:var(--cream); border:3px solid var(--magenta); border-radius:16px; padding:26px; display:flex; flex-direction:column; gap:14px; max-height:90vh; overflow-y:auto; overscroll-behavior:contain;}
   .drawer-head{display:flex; justify-content:space-between; align-items:center;}
   .drawer-head h3{margin:0; font-size:20px; color:var(--magenta);}
   .icon-btn{background:#fff; border:1.5px solid var(--line); color:var(--ink); width:32px; height:32px; border-radius:8px; font-size:16px;}
@@ -126,8 +127,6 @@
   .cart-item .ci-info{flex:1;}
   .cart-item .ci-name{font-size:13.5px; font-weight:700; color:var(--ink);}
   .cart-item .ci-price{font-size:12px; color:#7a6f8f; margin-top:2px;}
-  .cart-item .qty-stepper{justify-content:flex-start; margin-top:8px;}
-  .cart-item .ci-line-total{font-size:13px; font-weight:800; color:var(--green-dark); margin-top:6px;}
   .remove-link{font-size:11.5px; color:var(--red); background:none; border:none; padding:0; margin-top:6px; font-weight:700;}
   .cart-total-row{display:flex; justify-content:space-between; font-size:16px; font-weight:800; padding-top:6px; color:var(--magenta);}
   .empty-note{color:#8a7aa0; font-size:13.5px; text-align:center; padding:30px 0;}
@@ -188,7 +187,7 @@
   .order-row-meta{font-size:12px; color:#8a7aa0; margin-top:2px;}
   .order-row-total{font-size:15px; font-weight:800; color:var(--green-dark); white-space:nowrap;}
   .order-row-arrow{font-size:20px; color:var(--magenta); font-weight:700;}
-  .order-detail-box{background:#fff; border-radius:16px; padding:24px; max-width:min(480px,92vw); max-height:85vh; overflow-y:auto; box-shadow:var(--shadow);}
+  .order-detail-box{background:#fff; border-radius:16px; padding:24px; max-width:min(480px,92vw); max-height:85vh; overflow-y:auto; overscroll-behavior:contain; box-shadow:var(--shadow);}
   .od-section{margin-bottom:16px; font-size:13.5px; line-height:1.6;}
   .od-label{font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:var(--magenta); font-weight:700; margin-bottom:4px;}
   table.od-items-tbl{width:100%; border-collapse:collapse; font-size:13px; margin-top:4px;}
@@ -256,16 +255,6 @@
     <div class="drawer-head"><h3>Your box</h3><button class="icon-btn" id="closeCartBtn">✕</button></div>
     <div id="cartItemsWrap"></div>
     <div id="cartFooter"></div>
-  </div>
-</div>
-
-<!-- Order placed confirmation popup -->
-<div class="overlay center" id="orderSuccessOverlay">
-  <div class="modal-box" style="align-items:center; text-align:center;">
-    <button class="icon-btn" id="orderSuccessClose" style="align-self:flex-end;" aria-label="Close">✕</button>
-    <div style="font-size:40px; line-height:1;">✅</div>
-    <h3 style="margin:0; color:var(--magenta); font-size:19px;">Order placed successfully!</h3>
-    <div id="orderSuccessMsg" style="font-size:13.5px; color:var(--ink); line-height:1.6;"></div>
   </div>
 </div>
 
@@ -354,77 +343,6 @@ if(CONFIG_IS_PLACEHOLDER){
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
-
-// ---------- Firestore REST fallback ----------
-// The Firestore SDK keeps a persistent "Listen" streaming connection open for
-// both realtime updates and one-shot .get()/.add() calls. On some networks
-// that specific streaming channel can fail (FirebaseError: unavailable) even
-// though Firestore itself is reachable — plain REST calls to the same
-// database keep working. These helpers give loadProducts()/saveOrderToBackend()
-// a fallback path so the site stays usable even if that streaming channel is
-// degraded.
-function firestoreValueToJs(v){
-  if(!v) return null;
-  if('stringValue' in v) return v.stringValue;
-  if('integerValue' in v) return Number(v.integerValue);
-  if('doubleValue' in v) return v.doubleValue;
-  if('booleanValue' in v) return v.booleanValue;
-  if('nullValue' in v) return null;
-  if('timestampValue' in v) return v.timestampValue;
-  if('mapValue' in v) return firestoreFieldsToJs((v.mapValue && v.mapValue.fields) || {});
-  if('arrayValue' in v) return ((v.arrayValue && v.arrayValue.values) || []).map(firestoreValueToJs);
-  return null;
-}
-function firestoreFieldsToJs(fields){
-  const out = {};
-  for(const k in fields) out[k] = firestoreValueToJs(fields[k]);
-  return out;
-}
-function jsToFirestoreValue(v){
-  if(v === null || v === undefined) return { nullValue: null };
-  if(typeof v === 'string') return { stringValue: v };
-  if(typeof v === 'boolean') return { booleanValue: v };
-  if(typeof v === 'number') return Number.isInteger(v) ? { integerValue: String(v) } : { doubleValue: v };
-  if(Array.isArray(v)) return { arrayValue: { values: v.map(jsToFirestoreValue) } };
-  if(typeof v === 'object') return { mapValue: { fields: jsToFirestoreFields(v) } };
-  return { stringValue: String(v) };
-}
-function jsToFirestoreFields(obj){
-  const out = {};
-  for(const k in obj) out[k] = jsToFirestoreValue(obj[k]);
-  return out;
-}
-function firestoreRestBase(collection){
-  return `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/${collection}`;
-}
-async function withTimeout(promise, ms){
-  let timer;
-  const timeout = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('timeout')), ms); });
-  try{ return await Promise.race([promise, timeout]); } finally { clearTimeout(timer); }
-}
-async function fetchCollectionViaRest(collection){
-  let pageToken = '', out = [];
-  do{
-    const url = firestoreRestBase(collection) + '?pageSize=300' + (pageToken ? '&pageToken='+encodeURIComponent(pageToken) : '');
-    const res = await fetch(url);
-    if(!res.ok) throw new Error('Firestore REST read error '+res.status);
-    const json = await res.json();
-    (json.documents || []).forEach(doc => {
-      out.push({ id: doc.name.split('/').pop(), ...firestoreFieldsToJs(doc.fields || {}) });
-    });
-    pageToken = json.nextPageToken || '';
-  } while(pageToken);
-  return out;
-}
-async function addDocViaRest(collection, data){
-  const res = await fetch(firestoreRestBase(collection), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ fields: jsToFirestoreFields(data) })
-  });
-  if(!res.ok){ const t = await res.text(); throw new Error('Firestore REST write error '+res.status+': '+t); }
-  return res.json();
-}
 
 let PRODUCTS = [];
 let CART = {};
@@ -564,20 +482,8 @@ async function seedIfEmpty(){
 async function loadProducts(){
   if(CONFIG_IS_PLACEHOLDER){ PRODUCTS = []; return; }
   try{
-    // {source:'server'} matters here: a plain .get() silently resolves with
-    // an empty *successful* snapshot from an empty local cache when the
-    // realtime channel can't reach the server — it does NOT reject, so the
-    // catch-and-fallback below would never trigger without this.
-    const snap = await withTimeout(db.collection('products').orderBy('code').get({ source: 'server' }), 6000);
+    const snap = await db.collection('products').orderBy('code').get();
     PRODUCTS = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    return;
-  }catch(e){
-    console.warn('[products] realtime SDK path failed/timed out, falling back to REST:', e && e.message);
-  }
-  try{
-    const docs = await fetchCollectionViaRest('products');
-    docs.sort((a,b) => (a.code||0) - (b.code||0));
-    PRODUCTS = docs;
   }catch(e){
     console.error('loadProducts failed', e);
     toast('Could not reach the backend. Check Firebase config & rules.');
@@ -595,22 +501,7 @@ async function addProductToBackend(product){
 async function deleteProductFromBackend(id){ await db.collection('products').doc(id).delete(); }
 async function updateProductInBackend(id, updates){ await db.collection('products').doc(id).update(updates); }
 async function saveOrderToBackend(order){
-  try{
-    await withTimeout(
-      db.collection('orders').add({ ...order, placedAt: firebase.firestore.FieldValue.serverTimestamp() }),
-      6000
-    );
-    return;
-  }catch(e){
-    console.warn('[orders] realtime SDK path failed/timed out, falling back to REST:', e && e.message);
-  }
-  // REST fallback: same document shape, but placedAt is a client-set ISO
-  // string here instead of a server timestamp (REST doesn't support the
-  // FieldValue.serverTimestamp() sentinel without a separate transform call).
-  // loadOrdersFromBackend()'s orderBy('placedAt') still works either way —
-  // just be aware orders saved via this fallback sort by the customer's
-  // device clock, not Firestore's server clock.
-  await addDocViaRest('orders', { ...order, placedAt: new Date().toISOString() });
+  await db.collection('orders').add({ ...order, placedAt: firebase.firestore.FieldValue.serverTimestamp() });
 }
 async function loadOrdersFromBackend(){
   const snap = await db.collection('orders').orderBy('placedAt', 'desc').get();
@@ -640,13 +531,7 @@ function rowHtml(p){
     <td class="col-per">${p.per||'1 Box'}</td>
     <td class="col-actual">${money(p.mrp)}</td>
     <td class="col-disc">${money(p.price)}</td>
-    <td class="col-qty">
-      <div class="qty-stepper">
-        <button type="button" class="qty-btn" onclick="stepQty('${p.id}', -1)" aria-label="Decrease quantity">−</button>
-        <input type="number" min="0" inputmode="numeric" value="${qty}" placeholder="0" oninput="setQty('${p.id}', this.value)">
-        <button type="button" class="qty-btn" onclick="stepQty('${p.id}', 1)" aria-label="Increase quantity">+</button>
-      </div>
-    </td>
+    <td class="col-qty"><input type="number" min="0" inputmode="numeric" value="${qty}" placeholder="0" oninput="setQty('${p.id}', this.value)"></td>
     <td class="col-amt" id="amt-${p.id}">${amt}</td>
   </tr>`;
 }
@@ -694,29 +579,6 @@ function setQty(id, val){
   const input = document.querySelector(`#row-${id} .col-qty input`);
   if(input) input.value = n || '';
   updateCartBadge();
-  syncCartDrawerItem(id);
-}
-function stepQty(id, delta){
-  const current = CART[id] || 0;
-  setQty(id, current + delta);
-}
-// Keeps the "Your box" drawer's own qty/line-total/cart-total in sync
-// whenever a quantity changes, whether the change came from a stepper
-// inside the drawer itself or from the price-list row behind it.
-function syncCartDrawerItem(id){
-  const overlay = document.getElementById('cartOverlay');
-  if(!overlay || !overlay.classList.contains('open')) return;
-  if(!CART[id]){ renderCartDrawer(); return; }
-  const p = PRODUCTS.find(x=>x.id===id);
-  if(!p) return;
-  const input = document.querySelector(`#cart-item-${id} .qty-stepper input`);
-  if(input && input.value != CART[id]) input.value = CART[id];
-  const lineTotal = document.getElementById('ci-total-'+id);
-  if(lineTotal) lineTotal.textContent = money(CART[id]*p.price);
-  const cartTotalEl = document.querySelector('#cartFooter .cart-total-row span:last-child');
-  if(cartTotalEl) cartTotalEl.textContent = money(cartTotal());
-  const submitBtn = document.getElementById('submitOrderBtn');
-  if(submitBtn) submitBtn.textContent = `Submit order — ${money(cartTotal())}`;
 }
 function updateCartBadge(){
   const count = Object.values(CART).reduce((a,b)=>a+b,0);
@@ -742,17 +604,11 @@ function renderCartDrawer(){
   itemsWrap.innerHTML = ids.map(id=>{
     const p = PRODUCTS.find(x=>x.id===id); if(!p) return '';
     return `
-    <div class="cart-item" id="cart-item-${id}">
+    <div class="cart-item">
       <img src="${p.img}" alt="${p.name}">
       <div class="ci-info">
         <div class="ci-name">${p.name}</div>
-        <div class="ci-price">${money(p.price)} each</div>
-        <div class="qty-stepper">
-          <button type="button" class="qty-btn" onclick="stepQty('${id}', -1)" aria-label="Decrease quantity">−</button>
-          <input type="number" min="0" inputmode="numeric" value="${CART[id]}" oninput="setQty('${id}', this.value)">
-          <button type="button" class="qty-btn" onclick="stepQty('${id}', 1)" aria-label="Increase quantity">+</button>
-        </div>
-        <div class="ci-line-total" id="ci-total-${id}">${money(CART[id]*p.price)}</div>
+        <div class="ci-price">${CART[id]} × ${money(p.price)} = ${money(CART[id]*p.price)}</div>
         <button class="remove-link" onclick="removeFromCart('${id}')">Remove</button>
       </div>
     </div>`;
@@ -789,7 +645,7 @@ function renderCheckoutForm(){
 
 // Cloudflare Worker that sends WhatsApp order notifications via Twilio.
 // Set this to the URL printed by `npx wrangler deploy` (see worker/README.md).
-const WHATSAPP_NOTIFY_URL = 'https://wonderpyrotech-whatsapp.wonderpyrotech-dev.workers.dev';
+const WHATSAPP_NOTIFY_URL = 'PASTE_YOUR_WORKER_URL_HERE';
 // Matches the Worker's SITE_KEY secret — a light abuse deterrent, not a real
 // credential (see worker/README.md for why that's fine here).
 const WHATSAPP_SITE_KEY = '92YXnpOoVajVqdYfWBM3lvj1K5oifai3';
@@ -818,17 +674,16 @@ async function handleOrderSubmit(e){
     customer:{ name:fd.get('name'), mobile:fd.get('mobile'), email:fd.get('email')||'', address:fd.get('address'), city:fd.get('city'), state:fd.get('state')||'' },
     items, total: cartTotal(), status:'new'
   };
-  btn.disabled = true; msgBox.innerHTML = '';
+  btn.disabled = true; btn.textContent = 'Submitting…'; msgBox.innerHTML = '';
   try{
     await saveOrderToBackend(order);
     notifyWhatsApp(order);
+    msgBox.innerHTML = `
+      <div class="success-box">
+        Order placed! We'll contact you shortly on <b>${order.customer.mobile}</b> to confirm.
+      </div>`;
     CART = {}; updateCartBadge(); renderCatalog();
-    // Close the "Your box" drawer and show a centered confirmation popup
-    // (with its own close button) instead of an inline message inside the
-    // drawer — the drawer is about to be empty anyway since the cart was
-    // just cleared.
-    closeCart();
-    openOrderSuccess(order.customer.mobile);
+    toast('Order submitted to backend ✓');
   }catch(err){
     console.error(err);
     msgBox.innerHTML = `<div class="error-box">Something went wrong saving your order. Please try again.</div>`;
@@ -836,31 +691,38 @@ async function handleOrderSubmit(e){
   }
 }
 
-function openCart(){ document.getElementById('cartOverlay').classList.add('open'); renderCartDrawer(); }
-function closeCart(){ document.getElementById('cartOverlay').classList.remove('open'); }
+// Keeps the background page from scrolling while any overlay (cart drawer,
+// image popup, order detail, login, edit-product) is open. Without this,
+// scrolling inside an overlay's scrollable panel could also scroll the page
+// behind it — the overlay itself doesn't block scroll on its own, only the
+// body lock does. unlockBodyScroll() checks the actual DOM (rather than a
+// counter) so it's safe to call even when some close functions run
+// unconditionally (e.g. the Escape-key handler closes two overlays at
+// once) — it only lifts the lock once no `.overlay.open` is left.
+function lockBodyScroll(){
+  document.body.classList.add('no-scroll');
+}
+function unlockBodyScroll(){
+  if(!document.querySelector('.overlay.open')) document.body.classList.remove('no-scroll');
+}
+
+function openCart(){ document.getElementById('cartOverlay').classList.add('open'); lockBodyScroll(); renderCartDrawer(); }
+function closeCart(){ document.getElementById('cartOverlay').classList.remove('open'); unlockBodyScroll(); }
 document.getElementById('openCartBtn').addEventListener('click', openCart);
 document.getElementById('closeCartBtn').addEventListener('click', closeCart);
 document.getElementById('cartOverlay').addEventListener('click', (e)=>{ if(e.target.id==='cartOverlay') closeCart(); });
-
-// ---------- order placed confirmation popup ----------
-function openOrderSuccess(mobile){
-  document.getElementById('orderSuccessMsg').innerHTML = `We'll contact you shortly on <b>${mobile}</b> to confirm.`;
-  document.getElementById('orderSuccessOverlay').classList.add('open');
-}
-function closeOrderSuccess(){ document.getElementById('orderSuccessOverlay').classList.remove('open'); }
-document.getElementById('orderSuccessClose').addEventListener('click', closeOrderSuccess);
-document.getElementById('orderSuccessOverlay').addEventListener('click', (e)=>{ if(e.target.id==='orderSuccessOverlay') closeOrderSuccess(); });
 
 // ---------- product image popup ----------
 function openImagePopup(imgEl){
   document.getElementById('imgPopupImage').src = imgEl.src;
   document.getElementById('imgPopupCaption').textContent = imgEl.alt || '';
   document.getElementById('imgPopupOverlay').classList.add('open');
+  lockBodyScroll();
 }
-function closeImagePopup(){ document.getElementById('imgPopupOverlay').classList.remove('open'); }
+function closeImagePopup(){ document.getElementById('imgPopupOverlay').classList.remove('open'); unlockBodyScroll(); }
 document.getElementById('imgPopupClose').addEventListener('click', closeImagePopup);
 document.getElementById('imgPopupOverlay').addEventListener('click', (e)=>{ if(e.target.id==='imgPopupOverlay') closeImagePopup(); });
-document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeImagePopup(); closeOrderDetail(); closeOrderSuccess(); } });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeImagePopup(); closeOrderDetail(); } });
 document.getElementById('orderDetailClose').addEventListener('click', closeOrderDetail);
 document.getElementById('orderDetailOverlay').addEventListener('click', (e)=>{ if(e.target.id==='orderDetailOverlay') closeOrderDetail(); });
 
@@ -871,6 +733,7 @@ let adminTab = 'products';
 auth.onAuthStateChanged(user=>{
   adminAuthed = !!user;
   document.getElementById('loginOverlay').classList.remove('open');
+  unlockBodyScroll();
   renderAdminEntry();
 });
 
@@ -997,8 +860,9 @@ function openOrderDetail(i){
     <div class="od-total-row"><span>Total</span><span>${money(o.total)}</span></div>
   `;
   document.getElementById('orderDetailOverlay').classList.add('open');
+  lockBodyScroll();
 }
-function closeOrderDetail(){ document.getElementById('orderDetailOverlay').classList.remove('open'); }
+function closeOrderDetail(){ document.getElementById('orderDetailOverlay').classList.remove('open'); unlockBodyScroll(); }
 
 let pendingImageDataUrl = null;
 function setupImageUpload(){
@@ -1119,9 +983,11 @@ function openEditProduct(id){
   document.getElementById('editImgDropLabel').textContent = 'Click to update product image (JPG/PNG)';
   document.getElementById('editProductMsg').innerHTML = '';
   document.getElementById('editProductOverlay').classList.add('open');
+  lockBodyScroll();
 }
 function closeEditProduct(){
   document.getElementById('editProductOverlay').classList.remove('open');
+  unlockBodyScroll();
   editingProductId = null; pendingEditImageDataUrl = null;
 }
 document.getElementById('editProductClose').addEventListener('click', closeEditProduct);
@@ -1171,9 +1037,11 @@ document.getElementById('editProductForm').addEventListener('submit', async (e)=
 document.getElementById('adminLinkBtn').addEventListener('click', ()=>{
   if(adminAuthed){ document.getElementById('adminSection').scrollIntoView(); return; }
   document.getElementById('loginOverlay').classList.add('open');
+  lockBodyScroll();
 });
 document.getElementById('closeLoginBtn').addEventListener('click', ()=>{
   document.getElementById('loginOverlay').classList.remove('open');
+  unlockBodyScroll();
 });
 document.getElementById('loginForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
