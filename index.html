@@ -317,8 +317,8 @@
       <div class="field"><label>Product name <span class="req">*</span></label><input id="efName" required></div>
       <div class="field">
         <label>Category <span class="req">*</span></label>
-        <input id="efCategory" required list="editCatList">
-        <datalist id="editCatList"></datalist>
+        <select id="efCategorySelect"></select>
+        <input id="efCategoryNew" placeholder="Type the new category name" style="display:none; margin-top:8px;">
       </div>
       <div class="field"><label>Per</label>
         <select id="efPer"><option>1 Box</option><option>1 Pkt</option><option>1 Pc</option><option>1 Set</option></select>
@@ -937,8 +937,8 @@ function renderAdminBody(){
           <div class="field"><label>Product name <span class="req">*</span></label><input id="pfName" required></div>
           <div class="field">
             <label>Category <span class="req">*</span></label>
-            <input id="pfCategory" required list="catList" placeholder="e.g. Sparklers Product">
-            <datalist id="catList">${categories().map(c=>`<option value="${c}">`).join('')}</datalist>
+            <select id="pfCategorySelect"></select>
+            <input id="pfCategoryNew" placeholder="Type the new category name" style="display:none; margin-top:8px;">
           </div>
           <div class="field"><label>Per</label>
             <select id="pfPer"><option>1 Box</option><option>1 Pkt</option><option>1 Pc</option><option>1 Set</option></select>
@@ -971,6 +971,7 @@ function renderAdminBody(){
       </div>
     </div>`;
     setupImageUpload();
+    setupCategorySelect();
     document.getElementById('productForm').addEventListener('submit', handleProductSubmit);
     const seedBtn = document.getElementById('seedCatalogBtn');
     if(seedBtn) seedBtn.addEventListener('click', handleSeedClick);
@@ -1030,6 +1031,18 @@ function openOrderDetail(i){
 function closeOrderDetail(){ document.getElementById('orderDetailOverlay').classList.remove('open'); unlockBodyScroll(); }
 
 let pendingImageDataUrl = null;
+const NEW_CATEGORY_VALUE = '__new__';
+function setupCategorySelect(){
+  const select = document.getElementById('pfCategorySelect');
+  const newInput = document.getElementById('pfCategoryNew');
+  select.innerHTML = categories().map(c=>`<option value="${c}">${c}</option>`).join('')
+    + `<option value="${NEW_CATEGORY_VALUE}">+ Create new category…</option>`;
+  select.addEventListener('change', ()=>{
+    const isNew = select.value === NEW_CATEGORY_VALUE;
+    newInput.style.display = isNew ? 'block' : 'none';
+    if(isNew) newInput.focus();
+  });
+}
 function setupImageUpload(){
   const drop = document.getElementById('imgDrop');
   const input = document.getElementById('imgInput');
@@ -1070,7 +1083,10 @@ async function handleProductSubmit(e){
   e.preventDefault();
   const msg = document.getElementById('productFormMsg');
   const name = document.getElementById('pfName').value.trim();
-  const category = document.getElementById('pfCategory').value.trim();
+  const categorySelect = document.getElementById('pfCategorySelect');
+  const category = categorySelect.value === NEW_CATEGORY_VALUE
+    ? document.getElementById('pfCategoryNew').value.trim()
+    : categorySelect.value;
   const per = document.getElementById('pfPer').value;
   const price = parseFloat(document.getElementById('pfPrice').value);
   const mrp = parseFloat(document.getElementById('pfMrp').value) || price;
@@ -1138,11 +1154,17 @@ function openEditProduct(id){
   editingProductId = id;
   pendingEditImageDataUrl = null;
   document.getElementById('efName').value = p.name;
-  document.getElementById('efCategory').value = p.category;
+  const efSelect = document.getElementById('efCategorySelect');
+  const efNew = document.getElementById('efCategoryNew');
+  efSelect.innerHTML = categories().map(c=>`<option value="${c}">${c}</option>`).join('')
+    + `<option value="${NEW_CATEGORY_VALUE}">+ Create new category…</option>`;
+  const hasCategory = categories().includes(p.category);
+  efSelect.value = hasCategory ? p.category : NEW_CATEGORY_VALUE;
+  efNew.style.display = hasCategory ? 'none' : 'block';
+  efNew.value = hasCategory ? '' : p.category;
   document.getElementById('efPer').value = p.per || '1 Box';
   document.getElementById('efMrp').value = p.mrp || '';
   document.getElementById('efPrice').value = p.price;
-  document.getElementById('editCatList').innerHTML = categories().map(c=>`<option value="${c}">`).join('');
   const preview = document.getElementById('editImgPreview');
   preview.src = p.img; preview.style.display = 'block';
   document.getElementById('editImgDropLabel').textContent = 'Click to update product image (JPG/PNG)';
@@ -1157,6 +1179,12 @@ function closeEditProduct(){
 }
 document.getElementById('editProductClose').addEventListener('click', closeEditProduct);
 document.getElementById('editProductOverlay').addEventListener('click', (e)=>{ if(e.target.id==='editProductOverlay') closeEditProduct(); });
+document.getElementById('efCategorySelect').addEventListener('change', function(){
+  const isNew = this.value === NEW_CATEGORY_VALUE;
+  const efNew = document.getElementById('efCategoryNew');
+  efNew.style.display = isNew ? 'block' : 'none';
+  if(isNew){ efNew.value = ''; efNew.focus(); }
+});
 
 document.getElementById('editImgDrop').addEventListener('click', ()=>document.getElementById('editImgInput').click());
 document.getElementById('editImgInput').addEventListener('change', (e)=>{
@@ -1174,7 +1202,10 @@ document.getElementById('editProductForm').addEventListener('submit', async (e)=
   if(!editingProductId) return;
   const msg = document.getElementById('editProductMsg');
   const name = document.getElementById('efName').value.trim();
-  const category = document.getElementById('efCategory').value.trim();
+  const efSelect = document.getElementById('efCategorySelect');
+  const category = efSelect.value === NEW_CATEGORY_VALUE
+    ? document.getElementById('efCategoryNew').value.trim()
+    : efSelect.value;
   const per = document.getElementById('efPer').value;
   const price = parseFloat(document.getElementById('efPrice').value);
   const mrp = parseFloat(document.getElementById('efMrp').value) || price;
