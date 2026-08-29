@@ -791,22 +791,23 @@ function renderCheckoutForm(){
   document.getElementById('checkoutForm').addEventListener('submit', handleOrderSubmit);
 }
 
-// Cloudflare Worker that sends WhatsApp order notifications via Twilio.
-// Set this to the URL printed by `npx wrangler deploy` (see worker/README.md).
-const WHATSAPP_NOTIFY_URL = 'https://wonderpyrotech-whatsapp.wonderpyrotech-dev.workers.dev';
-// Matches the Worker's SITE_KEY secret — a light abuse deterrent, not a real
-// credential (see worker/README.md for why that's fine here).
-const WHATSAPP_SITE_KEY = '92YXnpOoVajVqdYfWBM3lvj1K5oifai3';
+const ADMIN_WHATSAPP_NUMBER = '919884803554'; // 91 = India country code + 98848 03554 (business account)
 
-function notifyWhatsApp(order){
-  if(!WHATSAPP_NOTIFY_URL || WHATSAPP_NOTIFY_URL === 'PASTE_YOUR_WORKER_URL_HERE') return;
-  // Best-effort / fire-and-forget: the order is already safely saved in
-  // Firestore at this point, so a failure here shouldn't block checkout.
-  fetch(WHATSAPP_NOTIFY_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Site-Key': WHATSAPP_SITE_KEY },
-    body: JSON.stringify(order)
-  }).catch(err => console.warn('[whatsapp] notify failed (order still saved):', err));
+function buildWhatsAppOrderLink(order){
+  const lines = [];
+  lines.push('🧨 New order — Wonder Pyro Tech website');
+  lines.push('');
+  lines.push(`Name: ${order.customer.name}`);
+  lines.push(`Mobile: ${order.customer.mobile}`);
+  if(order.customer.email) lines.push(`Email: ${order.customer.email}`);
+  lines.push(`Address: ${order.customer.address}, ${order.customer.city}${order.customer.state ? ', '+order.customer.state : ''}`);
+  lines.push('');
+  lines.push('Items:');
+  order.items.forEach(it=>{ lines.push(`- ${it.qty} x ${it.name} = ${money(it.qty*it.price)}`); });
+  lines.push('');
+  lines.push(`Total: ${money(order.total)}`);
+  const text = encodeURIComponent(lines.join('\n'));
+  return `https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${text}`;
 }
 
 async function handleOrderSubmit(e){
@@ -825,14 +826,15 @@ async function handleOrderSubmit(e){
   btn.disabled = true; msgBox.innerHTML = '';
   try{
     await saveOrderToBackend(order);
-    notifyWhatsApp(order);
+    const waLink = buildWhatsAppOrderLink(order);
+    const waWindow = window.open(waLink, '_blank');
     CART = {}; updateCartBadge(); renderCatalog();
     // Close the "Your box" drawer and show a centered confirmation popup
     // (with its own close button) instead of an inline message inside the
     // drawer — the drawer is about to be empty anyway since the cart was
     // just cleared.
     closeCart();
-    openOrderSuccess(order.customer.mobile);
+    openOrderSuccess(order.customer.mobile, waLink, waWindow);
   }catch(err){
     console.error(err);
     msgBox.innerHTML = `<div class="error-box">Something went wrong saving your order. Please try again.</div>`;
@@ -862,8 +864,12 @@ document.getElementById('closeCartBtn').addEventListener('click', closeCart);
 document.getElementById('cartOverlay').addEventListener('click', (e)=>{ if(e.target.id==='cartOverlay') closeCart(); });
 
 // ---------- order placed confirmation popup ----------
-function openOrderSuccess(mobile){
-  document.getElementById('orderSuccessMsg').innerHTML = `We'll contact you shortly on <b>${mobile}</b> to confirm.`;
+function openOrderSuccess(mobile, waLink, waWindow){
+  document.getElementById('orderSuccessMsg').innerHTML = `
+    We'll contact you shortly on <b>${mobile}</b> to confirm.<br><br>
+    ${waWindow ? "We've opened WhatsApp with your order details — just hit <b>Send</b> to notify us instantly." : ""}
+    <a href="${waLink}" target="_blank" rel="noopener" style="display:inline-block; margin-top:8px; background:#25D366; color:#fff; padding:9px 16px; border-radius:999px; font-weight:700; font-size:13px; text-decoration:none;">📲 ${waWindow ? 'Open WhatsApp again' : 'Send order via WhatsApp'}</a>
+  `;
   document.getElementById('orderSuccessOverlay').classList.add('open');
   lockBodyScroll();
 }
