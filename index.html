@@ -876,24 +876,21 @@ async function sendSmsViaFast2SMS(message){
 }
 
 async function sendWhatsAppViaFast2SMS(messageText){
-  if(!FAST2SMS_WHATSAPP_API_KEY || FAST2SMS_WHATSAPP_API_KEY === 'PASTE_YOUR_WHATSAPP_SPECIFIC_API_KEY_HERE') return;
+  if(!FAST2SMS_WHATSAPP_API_KEY || FAST2SMS_WHATSAPP_API_KEY === 'meRdF6n2KB5pOw9JfbTvsNxGola1gHCjcq7yV3huSiIQ0k4ULZJR1jGrAtBCbgD8MEyH5FXp4cIV6s3q') return;
   const url = new URL('https://www.fast2sms.com/dev/whatsapp');
   url.searchParams.set('message_id', FAST2SMS_WHATSAPP_MESSAGE_ID);
   url.searchParams.set('phone_number_id', FAST2SMS_WHATSAPP_PHONE_NUMBER_ID);
   url.searchParams.set('numbers', '91' + OWNER_NOTIFY_NUMBER);
   url.searchParams.set('variables_values', messageText);
+  // Query-param auth only — NOT a custom header. Fast2SMS's WhatsApp
+  // server confirmed (via a real CORS preflight rejection) that it does
+  // not allow a browser to send a custom Authorization header. A plain
+  // GET with no custom headers is a "simple" cross-origin request, which
+  // skips the preflight entirely and always reaches the server — same
+  // transport that already works for the SMS endpoint.
+  url.searchParams.set('authorization', FAST2SMS_WHATSAPP_API_KEY);
   try{
-    // Confirmed via testing: this request reaches Fast2SMS's server fine
-    // (they returned a proper JSON "Invalid Authentication" response, not
-    // a browser-level network/CORS failure) — so this really was just the
-    // wrong key, not a CORS issue. Sending the WhatsApp-specific key both
-    // as a header (per Fast2SMS's WhatsApp API docs) and as a query param
-    // (per their general docs) for maximum compatibility.
-    url.searchParams.set('authorization', FAST2SMS_WHATSAPP_API_KEY);
-    const res = await fetch(url.toString(), {
-      method:'GET',
-      headers: { 'Authorization': FAST2SMS_WHATSAPP_API_KEY }
-    });
+    const res = await fetch(url.toString(), { method:'GET' });
     const bodyText = await res.text().catch(()=> '(could not read response body)');
     console.log('[fast2sms][whatsapp] HTTP', res.status, bodyText);
   }catch(err){
