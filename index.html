@@ -839,7 +839,7 @@ function renderCheckoutForm(){
   document.getElementById('checkoutForm').addEventListener('submit', handleOrderSubmit);
 }
 
-const ADMIN_WHATSAPP_NUMBER = '917708450260'; // 91 = India country code + 77084 50260(business account)
+const ADMIN_WHATSAPP_NUMBER = '919884803554'; // 91 = India country code + 98848 03554 (business account)
 
 // Direct browser → Fast2SMS calls (no Cloudflare Worker). Sends SMS + a
 // WhatsApp template message to the owner right after an order is saved.
@@ -864,8 +864,13 @@ async function sendSmsViaFast2SMS(message){
   url.searchParams.set('route', 'q'); // Quick SMS — no DLT template registration needed
   url.searchParams.set('message', message);
   url.searchParams.set('numbers', OWNER_NOTIFY_NUMBER);
-  try{ await fetch(url.toString(), { method:'GET' }); }
-  catch(err){ console.warn('[fast2sms] sms failed (order still saved):', err); }
+  try{
+    const res = await fetch(url.toString(), { method:'GET' });
+    const bodyText = await res.text().catch(()=> '(could not read response body)');
+    console.log('[fast2sms][sms] HTTP', res.status, bodyText);
+  }catch(err){
+    console.warn('[fast2sms][sms] request failed to send (likely CORS/network block):', err);
+  }
 }
 
 async function sendWhatsAppViaFast2SMS(messageText){
@@ -875,8 +880,13 @@ async function sendWhatsAppViaFast2SMS(messageText){
   url.searchParams.set('phone_number_id', FAST2SMS_WHATSAPP_PHONE_NUMBER_ID);
   url.searchParams.set('numbers', '91' + OWNER_NOTIFY_NUMBER);
   url.searchParams.set('variables_values', messageText);
-  try{ await fetch(url.toString(), { method:'GET' }); }
-  catch(err){ console.warn('[fast2sms] whatsapp failed (order still saved):', err); }
+  try{
+    const res = await fetch(url.toString(), { method:'GET' });
+    const bodyText = await res.text().catch(()=> '(could not read response body)');
+    console.log('[fast2sms][whatsapp] HTTP', res.status, bodyText);
+  }catch(err){
+    console.warn('[fast2sms][whatsapp] request failed to send (likely CORS/network block):', err);
+  }
 }
 
 function notifyOwnerViaFast2SMS(order){
