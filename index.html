@@ -28,10 +28,11 @@
     --radius:14px;
   }
   *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
+  html{scroll-behavior:smooth; overflow-x:hidden;}
   body{
     margin:0; background:var(--cream); color:var(--ink);
     font-family:'Work Sans', sans-serif; -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
   }
   /* Locks the background page from scrolling while any cart/modal overlay is
      open (added because scrolling inside the cart drawer was also scrolling
@@ -63,6 +64,21 @@
   }
   .cart-badge{position:absolute; top:-7px; right:-7px; background:var(--red); color:#fff; font-size:11px; min-width:19px; height:19px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-weight:700;}
 
+  @media (max-width:760px){
+    .topbar-inner{flex-wrap:wrap; padding:10px 16px; gap:8px 10px;}
+    .brand{order:1; flex:1 1 auto; min-width:0;}
+    .brand-name{font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .brand-mark{width:38px; height:38px;}
+    .topbar-actions{order:2; flex:0 0 auto; gap:8px;}
+    .call-chip{display:none;}
+    .cart-btn{padding:8px 12px; font-size:13px;}
+    nav.mainnav{order:3; flex-basis:100%; justify-content:center; gap:18px; font-size:14px; padding-top:6px; border-top:1px solid var(--line);}
+  }
+  @media (max-width:380px){
+    nav.mainnav{gap:12px; font-size:13px;}
+    .brand-name{font-size:14px;}
+  }
+
   /* ---------- hero (image banner) ---------- */
   .hero{position:relative; background:#fff; padding:0 0 22px;}
   .hero-banner-img{width:100%; display:block;}
@@ -72,7 +88,7 @@
   .btn-ghost:hover{background:var(--magenta); color:#fff;}
 
   /* ---------- category nav ---------- */
-  .catnav{position:sticky; top:64px; z-index:30; background:#fff; border-bottom:2px solid var(--line);}
+  .catnav{position:sticky; top:var(--header-h, 64px); z-index:30; background:#fff; border-bottom:2px solid var(--line);}
   .catnav-inner{max-width:1200px; margin:0 auto; padding:10px 22px; display:flex; gap:8px; overflow-x:auto; scrollbar-width:none;}
   .catnav-inner::-webkit-scrollbar{display:none;}
   .catnav a{white-space:nowrap; font-size:12.5px; padding:7px 14px; border-radius:999px; border:1.5px solid var(--magenta); color:var(--magenta); text-decoration:none; flex:0 0 auto; font-weight:600;}
@@ -86,7 +102,7 @@
     border-radius:22px; padding:14px; box-shadow:var(--shadow); margin-bottom:34px;
   }
   .frame-inner{background:#fff; border-radius:14px; overflow:hidden;}
-  .table-scroll{overflow-x:auto;}
+  .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain;}
   table.price-table{width:100%; border-collapse:collapse; min-width:720px;}
   table.price-table thead th{
     background:var(--red); color:#fff; font-size:12.5px; text-transform:uppercase; letter-spacing:.3px;
@@ -168,16 +184,16 @@
   table.orders-tbl th, table.orders-tbl td{text-align:left; padding:10px 8px; border-bottom:1px solid var(--line); vertical-align:top;}
   table.orders-tbl th{color:#8a7aa0; font-weight:700; font-size:11.5px; text-transform:uppercase; letter-spacing:.4px;}
   .pill-sm{font-size:10.5px; background:#f4ecd8; padding:2px 8px; border-radius:999px; color:var(--ink);}
-  .prod-row{display:flex; align-items:center; gap:10px; padding:8px 6px; border-bottom:1px solid var(--line); font-size:13px;}
-  .prod-row img{width:38px;height:38px;object-fit:cover;border-radius:6px;background:#f4ecd8;}
-  .prod-row .pr-name{flex:1;}
+  .prod-row{display:flex; align-items:center; gap:10px; padding:8px 6px; border-bottom:1px solid var(--line); font-size:13px; flex-wrap:wrap;}
+  .prod-row img{width:38px;height:38px;object-fit:cover;border-radius:6px;background:#f4ecd8; flex:0 0 auto;}
+  .prod-row .pr-name{flex:1 1 140px; min-width:0; word-break:break-word;}
   .del-btn{background:none;border:none;color:var(--red);font-size:12px; font-weight:700;}
   .edit-btn{background:none;border:none;color:var(--magenta);font-size:12px; font-weight:700; margin-right:6px;}
 
   .cat-manage-block{background:#fbf4ff; border:1.5px solid var(--line); border-radius:12px; padding:16px; margin-bottom:22px;}
   .cat-manage-list{display:flex; flex-direction:column; gap:6px; max-height:280px; overflow-y:auto;}
-  .cat-manage-row{display:flex; align-items:center; gap:10px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:13px;}
-  .cmr-name{flex:1; font-weight:700; color:var(--ink);}
+  .cat-manage-row{display:flex; align-items:center; gap:10px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:13px; flex-wrap:wrap;}
+  .cmr-name{flex:1 1 100px; min-width:0; word-break:break-word; font-weight:700; color:var(--ink);}
   .cmr-count{font-size:11.5px; color:#8a7aa0; white-space:nowrap;}
 
   .toast{position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:100; background:var(--green); color:#fff; padding:10px 18px; border-radius:999px; font-size:13px; font-weight:700; box-shadow:var(--shadow); display:none;}
@@ -825,6 +841,57 @@ function renderCheckoutForm(){
 
 const ADMIN_WHATSAPP_NUMBER = '919884803554'; // 91 = India country code + 98848 03554 (business account)
 
+// Direct browser → Fast2SMS calls (no Cloudflare Worker). Sends SMS + a
+// WhatsApp template message to the owner right after an order is saved.
+//
+// SECURITY NOTE: FAST2SMS_API_KEY below is visible to anyone who views this
+// page's source — this was a deliberate, informed trade-off (see chat) to
+// drop the Cloudflare Worker that used to keep it server-side-only. Anyone
+// who copies this key could send SMS/WhatsApp on your Fast2SMS account's
+// balance. If that ever happens, rotate the key immediately in your
+// Fast2SMS dashboard (Dev API section) and paste the new one in here.
+const FAST2SMS_API_KEY = 'meRdF6n2KB5pOw9JfbTvsNxGola1gHCjcq7yV3huSiIQ0k4ULZJR1jGrAtBCbgD8MEyH5FXp4cIV6s3q';
+const OWNER_NOTIFY_NUMBER = '7708450260'; // bare 10-digit Indian mobile, no +91, no spaces
+// WhatsApp template identifiers from the Fast2SMS panel (WABA number +
+// approved template) — not secrets, just identify which template to use.
+const FAST2SMS_WHATSAPP_MESSAGE_ID = '30047';
+const FAST2SMS_WHATSAPP_PHONE_NUMBER_ID = '1364963933356640';
+
+async function sendSmsViaFast2SMS(message){
+  if(!FAST2SMS_API_KEY || FAST2SMS_API_KEY === 'PASTE_YOUR_FAST2SMS_API_KEY_HERE') return;
+  const url = new URL('https://www.fast2sms.com/dev/bulkV2');
+  url.searchParams.set('authorization', FAST2SMS_API_KEY);
+  url.searchParams.set('route', 'q'); // Quick SMS — no DLT template registration needed
+  url.searchParams.set('message', message);
+  url.searchParams.set('numbers', OWNER_NOTIFY_NUMBER);
+  try{ await fetch(url.toString(), { method:'GET' }); }
+  catch(err){ console.warn('[fast2sms] sms failed (order still saved):', err); }
+}
+
+async function sendWhatsAppViaFast2SMS(messageText){
+  if(!FAST2SMS_API_KEY || FAST2SMS_API_KEY === 'PASTE_YOUR_FAST2SMS_API_KEY_HERE') return;
+  const url = new URL('https://www.fast2sms.com/dev/whatsapp');
+  url.searchParams.set('message_id', FAST2SMS_WHATSAPP_MESSAGE_ID);
+  url.searchParams.set('phone_number_id', FAST2SMS_WHATSAPP_PHONE_NUMBER_ID);
+  url.searchParams.set('numbers', '91' + OWNER_NOTIFY_NUMBER);
+  url.searchParams.set('variables_values', messageText);
+  try{ await fetch(url.toString(), { method:'GET' }); }
+  catch(err){ console.warn('[fast2sms] whatsapp failed (order still saved):', err); }
+}
+
+function notifyOwnerViaFast2SMS(order){
+  const itemsSummary = order.items.map(it=>`${it.qty}x ${it.name}`).join(', ');
+  const totalFormatted = money(order.total);
+  // SMS kept short/no item list — Fast2SMS bills Quick SMS per ~160-char
+  // segment, and "Rs." (not "₹") keeps it in single-segment GSM-7 encoding.
+  const smsMessage = `New order received! Total Rs.${Number(order.total||0).toLocaleString('en-IN')}. From ${order.customer.name||'Customer'} (${order.customer.mobile||'N/A'}).`.slice(0,160);
+  // WhatsApp is priced per message not per character, so the full item
+  // list goes here instead.
+  const whatsappMessage = `New order: ${itemsSummary}. Total ${totalFormatted}. From ${order.customer.name||'Customer'} (${order.customer.mobile||'N/A'}).`.slice(0,600);
+  sendSmsViaFast2SMS(smsMessage);
+  sendWhatsAppViaFast2SMS(whatsappMessage);
+}
+
 function buildWhatsAppOrderLink(order){
   const lines = [];
   lines.push('🧨 New order — Wonder Pyro Tech website');
@@ -858,6 +925,7 @@ async function handleOrderSubmit(e){
   btn.disabled = true; msgBox.innerHTML = '';
   try{
     await saveOrderToBackend(order);
+    notifyOwnerViaFast2SMS(order);
     const waLink = buildWhatsAppOrderLink(order);
     const waWindow = window.open(waLink, '_blank');
     CART = {}; updateCartBadge(); renderCatalog();
@@ -1365,11 +1433,23 @@ document.getElementById('loginForm').addEventListener('submit', async (e)=>{
   }catch(err){ msg.innerHTML = `<div class="error-box">${err.message}</div>`; }
 });
 
+// ---------- responsive: keep the category bar pinned right below the
+// header, whatever height the header happens to be (it wraps to 2 rows
+// on narrow screens) ----------
+function updateHeaderOffset(){
+  const topbar = document.querySelector('header.topbar');
+  if(topbar) document.documentElement.style.setProperty('--header-h', topbar.offsetHeight + 'px');
+}
+window.addEventListener('resize', updateHeaderOffset);
+window.addEventListener('load', updateHeaderOffset);
+
 // ---------- init ----------
 async function init(){
+  updateHeaderOffset();
   document.getElementById('catalog').innerHTML = `<div class="loading-row">Loading price list from backend…</div>`;
   await loadProducts();
   renderCatNav(); renderCatalog(); updateCartBadge();
+  updateHeaderOffset();
 }
 init();
 </script>
