@@ -913,7 +913,7 @@ function notifyOwnerViaFast2SMS(order){
   sendWhatsAppViaFast2SMS(whatsappMessage);
 }
 
-<!-- function buildWhatsAppOrderLink(order){
+function buildWhatsAppOrderLink(order){
   const lines = [];
   lines.push('🧨 New order — Wonder Pyro Tech website');
   lines.push('');
@@ -928,7 +928,7 @@ function notifyOwnerViaFast2SMS(order){
   lines.push(`Total: ${money(order.total)}`);
   const text = encodeURIComponent(lines.join('\n'));
   return `https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${text}`;
-} -->
+}
 
 async function handleOrderSubmit(e){
   e.preventDefault();
