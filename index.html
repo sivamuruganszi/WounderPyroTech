@@ -839,7 +839,7 @@ function renderCheckoutForm(){
   document.getElementById('checkoutForm').addEventListener('submit', handleOrderSubmit);
 }
 
-const ADMIN_WHATSAPP_NUMBER = '917708450260'; // 91 = India country code + 77084 50260(business account)
+const ADMIN_WHATSAPP_NUMBER = '917708450260'; // 91 = India country code + 7708450260 (business account)
 
 // Direct browser → Fast2SMS calls (no Cloudflare Worker). Sends SMS + a
 // WhatsApp template message to the owner right after an order is saved.
@@ -881,18 +881,7 @@ async function sendWhatsAppViaFast2SMS(messageText){
   url.searchParams.set('numbers', '91' + OWNER_NOTIFY_NUMBER);
   url.searchParams.set('variables_values', messageText);
   try{
-    // Fast2SMS's WhatsApp endpoint expects the key as an Authorization
-    // header (unlike the SMS endpoint, which takes it as a query param).
-    // NOTE: a custom header makes this a non-"simple" cross-origin
-    // request, which triggers a CORS preflight — if Fast2SMS's server
-    // doesn't answer that preflight, the browser will block this before
-    // it ever reaches their server. Check the Network tab: if you see an
-    // OPTIONS request to this URL failing/blocked, that's what's
-    // happening, and this call needs a small server-side relay instead.
-    const res = await fetch(url.toString(), {
-      method:'GET',
-      headers: { 'Authorization': FAST2SMS_API_KEY }
-    });
+    const res = await fetch(url.toString(), { method:'GET' });
     const bodyText = await res.text().catch(()=> '(could not read response body)');
     console.log('[fast2sms][whatsapp] HTTP', res.status, bodyText);
   }catch(err){
