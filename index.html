@@ -876,7 +876,7 @@ async function sendSmsViaFast2SMS(message){
 }
 
 async function sendWhatsAppViaFast2SMS(messageText){
-  if(!FAST2SMS_WHATSAPP_API_KEY || FAST2SMS_WHATSAPP_API_KEY === 'meRdF6n2KB5pOw9JfbTvsNxGola1gHCjcq7yV3huSiIQ0k4ULZJR1jGrAtBCbgD8MEyH5FXp4cIV6s3q') return;
+  if(!FAST2SMS_WHATSAPP_API_KEY || FAST2SMS_WHATSAPP_API_KEY === 'PASTE_YOUR_WHATSAPP_SPECIFIC_API_KEY_HERE') return;
   const url = new URL('https://www.fast2sms.com/dev/whatsapp');
   url.searchParams.set('message_id', FAST2SMS_WHATSAPP_MESSAGE_ID);
   url.searchParams.set('phone_number_id', FAST2SMS_WHATSAPP_PHONE_NUMBER_ID);
