@@ -839,10 +839,7 @@ function renderCheckoutForm(){
   document.getElementById('checkoutForm').addEventListener('submit', handleOrderSubmit);
 }
 
-const ADMIN_WHATSAPP_NUMBER = '917708450260'; // 91 = India country code + 7708450260 (business account)
-
-// Direct browser → Fast2SMS calls (no Cloudflare Worker). Sends SMS + a
-// WhatsApp template message to the owner right after an order is saved.
+// Direct browser → Fast2SMS calls (no Cloudflare Worker).
 //
 // SECURITY NOTE: FAST2SMS_API_KEY below is visible to anyone who views this
 // page's source — this was a deliberate, informed trade-off (see chat) to
@@ -850,7 +847,12 @@ const ADMIN_WHATSAPP_NUMBER = '917708450260'; // 91 = India country code + 77084
 // who copies this key could send SMS/WhatsApp on your Fast2SMS account's
 // balance. If that ever happens, rotate the key immediately in your
 // Fast2SMS dashboard (Dev API section) and paste the new one in here.
-const FAST2SMS_API_KEY = 'meRdF6n2KB5pOw9JfbTvsNxGola1gHCjcq7yV3huSiIQ0k4ULZJR1jGrAtBCbgD8MEyH5FXp4cIV6s3q';
+const FAST2SMS_API_KEY = 'meRdF6n2KB5pOw9JfbTvsNxGola1gHCjcq7yV3huSiIQ0k4ULZJR1jGrAtBCbgD8MEyH5FXp4cIV6s3q'; // SMS Dev API key (confirmed working)
+// Fast2SMS's WhatsApp API uses a SEPARATE authorization key from the SMS
+// one above — found in the panel next to "WhatsApp Manager", under a
+// "WhatsApp API" link. This is almost certainly why WhatsApp sends were
+// failing with "Invalid Authentication" even though SMS worked fine.
+const FAST2SMS_WHATSAPP_API_KEY = 'meRdF6n2KB5pOw9JfbTvsNxGola1gHCjcq7yV3huSiIQ0k4ULZJR1jGrAtBCbgD8MEyH5FXp4cIV6s3q';
 const OWNER_NOTIFY_NUMBER = '7708450260'; // bare 10-digit Indian mobile, no +91, no spaces
 // WhatsApp template identifiers from the Fast2SMS panel (WABA number +
 // approved template) — not secrets, just identify which template to use.
@@ -874,14 +876,24 @@ async function sendSmsViaFast2SMS(message){
 }
 
 async function sendWhatsAppViaFast2SMS(messageText){
-  if(!FAST2SMS_API_KEY || FAST2SMS_API_KEY === 'meRdF6n2KB5pOw9JfbTvsNxGola1gHCjcq7yV3huSiIQ0k4ULZJR1jGrAtBCbgD8MEyH5FXp4cIV6s3q') return;
+  if(!FAST2SMS_WHATSAPP_API_KEY || FAST2SMS_WHATSAPP_API_KEY === 'PASTE_YOUR_WHATSAPP_SPECIFIC_API_KEY_HERE') return;
   const url = new URL('https://www.fast2sms.com/dev/whatsapp');
   url.searchParams.set('message_id', FAST2SMS_WHATSAPP_MESSAGE_ID);
   url.searchParams.set('phone_number_id', FAST2SMS_WHATSAPP_PHONE_NUMBER_ID);
   url.searchParams.set('numbers', '91' + OWNER_NOTIFY_NUMBER);
   url.searchParams.set('variables_values', messageText);
   try{
-    const res = await fetch(url.toString(), { method:'GET' });
+    // Confirmed via testing: this request reaches Fast2SMS's server fine
+    // (they returned a proper JSON "Invalid Authentication" response, not
+    // a browser-level network/CORS failure) — so this really was just the
+    // wrong key, not a CORS issue. Sending the WhatsApp-specific key both
+    // as a header (per Fast2SMS's WhatsApp API docs) and as a query param
+    // (per their general docs) for maximum compatibility.
+    url.searchParams.set('authorization', FAST2SMS_WHATSAPP_API_KEY);
+    const res = await fetch(url.toString(), {
+      method:'GET',
+      headers: { 'Authorization': FAST2SMS_WHATSAPP_API_KEY }
+    });
     const bodyText = await res.text().catch(()=> '(could not read response body)');
     console.log('[fast2sms][whatsapp] HTTP', res.status, bodyText);
   }catch(err){
@@ -898,25 +910,10 @@ function notifyOwnerViaFast2SMS(order){
   // WhatsApp is priced per message not per character, so the full item
   // list goes here instead.
   const whatsappMessage = `New order: ${itemsSummary}. Total ${totalFormatted}. From ${order.customer.name||'Customer'} (${order.customer.mobile||'N/A'}).`.slice(0,600);
-  sendSmsViaFast2SMS(smsMessage);
+  // SMS notification disabled for now while we debug the WhatsApp call —
+  // uncomment to re-enable (SMS itself was confirmed working).
+  // sendSmsViaFast2SMS(smsMessage);
   sendWhatsAppViaFast2SMS(whatsappMessage);
-}
-
-function buildWhatsAppOrderLink(order){
-  const lines = [];
-  lines.push('🧨 New order — Wonder Pyro Tech website');
-  lines.push('');
-  lines.push(`Name: ${order.customer.name}`);
-  lines.push(`Mobile: ${order.customer.mobile}`);
-  if(order.customer.email) lines.push(`Email: ${order.customer.email}`);
-  lines.push(`Address: ${order.customer.address}, ${order.customer.city}${order.customer.state ? ', '+order.customer.state : ''}`);
-  lines.push('');
-  lines.push('Items:');
-  order.items.forEach(it=>{ lines.push(`- ${it.qty} x ${it.name} = ${money(it.qty*it.price)}`); });
-  lines.push('');
-  lines.push(`Total: ${money(order.total)}`);
-  const text = encodeURIComponent(lines.join('\n'));
-  return `https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${text}`;
 }
 
 async function handleOrderSubmit(e){
@@ -936,15 +933,13 @@ async function handleOrderSubmit(e){
   try{
     await saveOrderToBackend(order);
     notifyOwnerViaFast2SMS(order);
-    const waLink = buildWhatsAppOrderLink(order);
-    const waWindow = window.open(waLink, '_blank');
     CART = {}; updateCartBadge(); renderCatalog();
     // Close the "Your box" drawer and show a centered confirmation popup
     // (with its own close button) instead of an inline message inside the
     // drawer — the drawer is about to be empty anyway since the cart was
     // just cleared.
     closeCart();
-    openOrderSuccess(order.customer.mobile, waLink, waWindow);
+    openOrderSuccess(order.customer.mobile);
   }catch(err){
     console.error(err);
     msgBox.innerHTML = `<div class="error-box">Something went wrong saving your order. Please try again.</div>`;
@@ -974,12 +969,8 @@ document.getElementById('closeCartBtn').addEventListener('click', closeCart);
 document.getElementById('cartOverlay').addEventListener('click', (e)=>{ if(e.target.id==='cartOverlay') closeCart(); });
 
 // ---------- order placed confirmation popup ----------
-function openOrderSuccess(mobile, waLink, waWindow){
-  document.getElementById('orderSuccessMsg').innerHTML = `
-    We'll contact you shortly on <b>${mobile}</b> to confirm.<br><br>
-    ${waWindow ? "We've opened WhatsApp with your order details — just hit <b>Send</b> to notify us instantly." : ""}
-    <a href="${waLink}" target="_blank" rel="noopener" style="display:inline-block; margin-top:8px; background:#25D366; color:#fff; padding:9px 16px; border-radius:999px; font-weight:700; font-size:13px; text-decoration:none;">📲 ${waWindow ? 'Open WhatsApp again' : 'Send order via WhatsApp'}</a>
-  `;
+function openOrderSuccess(mobile){
+  document.getElementById('orderSuccessMsg').innerHTML = `We'll contact you shortly on <b>${mobile}</b> to confirm.`;
   document.getElementById('orderSuccessOverlay').classList.add('open');
   lockBodyScroll();
 }
