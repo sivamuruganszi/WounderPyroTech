@@ -839,7 +839,7 @@ function renderCheckoutForm(){
   document.getElementById('checkoutForm').addEventListener('submit', handleOrderSubmit);
 }
 
-const ADMIN_WHATSAPP_NUMBER = '919884803554'; // 91 = India country code + 98848 03554 (business account)
+const ADMIN_WHATSAPP_NUMBER = '917708450260'; // 91 = India country code + 77084 50260(business account)
 
 // Direct browser → Fast2SMS calls (no Cloudflare Worker). Sends SMS + a
 // WhatsApp template message to the owner right after an order is saved.
@@ -857,7 +857,7 @@ const OWNER_NOTIFY_NUMBER = '7708450260'; // bare 10-digit Indian mobile, no +91
 const FAST2SMS_WHATSAPP_MESSAGE_ID = '30047';
 const FAST2SMS_WHATSAPP_PHONE_NUMBER_ID = '1364963933356640';
 
-async function sendSmsViaFast2SMS(message){
+<!-- async function sendSmsViaFast2SMS(message){
   if(!FAST2SMS_API_KEY || FAST2SMS_API_KEY === 'PASTE_YOUR_FAST2SMS_API_KEY_HERE') return;
   const url = new URL('https://www.fast2sms.com/dev/bulkV2');
   url.searchParams.set('authorization', FAST2SMS_API_KEY);
@@ -871,7 +871,7 @@ async function sendSmsViaFast2SMS(message){
   }catch(err){
     console.warn('[fast2sms][sms] request failed to send (likely CORS/network block):', err);
   }
-}
+} -->
 
 async function sendWhatsAppViaFast2SMS(messageText){
   if(!FAST2SMS_API_KEY || FAST2SMS_API_KEY === 'PASTE_YOUR_FAST2SMS_API_KEY_HERE') return;
@@ -913,7 +913,7 @@ function notifyOwnerViaFast2SMS(order){
   sendWhatsAppViaFast2SMS(whatsappMessage);
 }
 
-function buildWhatsAppOrderLink(order){
+<!-- function buildWhatsAppOrderLink(order){
   const lines = [];
   lines.push('🧨 New order — Wonder Pyro Tech website');
   lines.push('');
@@ -928,7 +928,7 @@ function buildWhatsAppOrderLink(order){
   lines.push(`Total: ${money(order.total)}`);
   const text = encodeURIComponent(lines.join('\n'));
   return `https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${text}`;
-}
+} -->
 
 async function handleOrderSubmit(e){
   e.preventDefault();
