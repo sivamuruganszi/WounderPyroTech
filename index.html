@@ -904,9 +904,14 @@ function notifyOwnerViaFast2SMS(order){
   // SMS kept short/no item list — Fast2SMS bills Quick SMS per ~160-char
   // segment, and "Rs." (not "₹") keeps it in single-segment GSM-7 encoding.
   const smsMessage = `New order received! Total Rs.${Number(order.total||0).toLocaleString('en-IN')}. From ${order.customer.name||'Customer'} (${order.customer.mobile||'N/A'}).`.slice(0,160);
-  // WhatsApp is priced per message not per character, so the full item
-  // list goes here instead.
-  const whatsappMessage = `New order: ${itemsSummary}. Total ${totalFormatted}. From ${order.customer.name||'Customer'} (${order.customer.mobile||'N/A'}).`.slice(0,600);
+  // The approved WhatsApp template ("Dear user, Your last payment
+  // completed successfully amount: {{1}}") was built for a short
+  // payment-confirmation amount, not a full order summary — sending our
+  // previous long, multi-field string into that single variable triggered
+  // Fast2SMS/Meta's "issue with the parameters in your template" error
+  // (#132018). Sending just the total now, to match what the template was
+  // actually approved for.
+  const whatsappMessage = totalFormatted;
   // SMS notification disabled for now while we debug the WhatsApp call —
   // uncomment to re-enable (SMS itself was confirmed working).
   // sendSmsViaFast2SMS(smsMessage);
