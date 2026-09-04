@@ -859,19 +859,20 @@ const OWNER_NOTIFY_NUMBER = '8050198788'; // bare 10-digit Indian mobile, no +91
 const FAST2SMS_WHATSAPP_MESSAGE_ID = '30047';
 const FAST2SMS_WHATSAPP_PHONE_NUMBER_ID = '1364963933356640';
 
-async function sendSmsViaFast2SMS(message){
+async function sendSmsViaFast2SMS(message, recipientNumber){
   if(!FAST2SMS_API_KEY || FAST2SMS_API_KEY === 'PASTE_YOUR_FAST2SMS_API_KEY_HERE') return;
+  if(!recipientNumber) return;
   const url = new URL('https://www.fast2sms.com/dev/bulkV2');
   url.searchParams.set('authorization', FAST2SMS_API_KEY);
   url.searchParams.set('route', 'q'); // Quick SMS — no DLT template registration needed
   url.searchParams.set('message', message);
-  url.searchParams.set('numbers', OWNER_NOTIFY_NUMBER);
+  url.searchParams.set('numbers', recipientNumber);
   try{
     const res = await fetch(url.toString(), { method:'GET' });
     const bodyText = await res.text().catch(()=> '(could not read response body)');
-    console.log('[fast2sms][sms] HTTP', res.status, bodyText);
+    console.log('[fast2sms][sms]', recipientNumber, 'HTTP', res.status, bodyText);
   }catch(err){
-    console.warn('[fast2sms][sms] request failed to send (likely CORS/network block):', err);
+    console.warn('[fast2sms][sms] request failed for', recipientNumber, '(likely CORS/network block):', err);
   }
 }
 
@@ -913,10 +914,7 @@ function normalizeIndianMobile(raw){
 }
 
 function notifyOwnerViaFast2SMS(order){
-  const itemsSummary = order.items.map(it=>`${it.qty}x ${it.name}`).join(', ');
   const totalFormatted = money(order.total);
-  // SMS kept short/no item list — Fast2SMS bills Quick SMS per ~160-char
-  // segment, and "Rs." (not "₹") keeps it in single-segment GSM-7 encoding.
   const smsMessage = `New order received! Total Rs.${Number(order.total||0).toLocaleString('en-IN')}. From ${order.customer.name||'Customer'} (${order.customer.mobile||'N/A'}).`.slice(0,160);
   // The approved WhatsApp template ("Dear user, Your last payment
   // completed successfully amount: {{1}}") was built for a short
@@ -926,20 +924,20 @@ function notifyOwnerViaFast2SMS(order){
   // (#132018). Sending just the total now, to match what the template was
   // actually approved for.
   const whatsappMessage = totalFormatted;
-  // SMS notification disabled for now while we debug the WhatsApp call —
-  // uncomment to re-enable (SMS itself was confirmed working).
-  // sendSmsViaFast2SMS(smsMessage);
 
-  // Owner copy — always to the fixed business number.
-  sendWhatsAppViaFast2SMS(whatsappMessage, '91' + OWNER_NOTIFY_NUMBER);
-
-  // Customer copy — to whatever mobile number they typed at checkout.
-  const customerNumber = normalizeIndianMobile(order.customer.mobile);
-  if(customerNumber){
-    sendWhatsAppViaFast2SMS(whatsappMessage, customerNumber);
-  }else{
-    console.warn('[fast2sms][whatsapp] customer mobile did not look like a valid Indian number, skipped:', order.customer.mobile);
+  // Both SMS and WhatsApp now go to the customer's own number (whatever
+  // they typed at checkout) — NOT to the fixed OWNER_NOTIFY_NUMBER, per
+  // request. That constant is left defined further up, unused, in case
+  // owner-side notifications are wanted back later.
+  const customerWA = normalizeIndianMobile(order.customer.mobile); // e.g. '918050198788'
+  if(!customerWA){
+    console.warn('[fast2sms] customer mobile did not look like a valid Indian number, notifications skipped:', order.customer.mobile);
+    return;
   }
+  const customerSMS = customerWA.slice(2); // bare 10-digit, no '91' prefix — SMS route expects this format
+
+  sendSmsViaFast2SMS(smsMessage, customerSMS);
+  sendWhatsAppViaFast2SMS(whatsappMessage, customerWA);
 }
 
 async function handleOrderSubmit(e){
