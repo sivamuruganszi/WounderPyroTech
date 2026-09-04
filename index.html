@@ -875,12 +875,13 @@ async function sendSmsViaFast2SMS(message){
   }
 }
 
-async function sendWhatsAppViaFast2SMS(messageText){
+async function sendWhatsAppViaFast2SMS(messageText, recipientNumber){
   if(!FAST2SMS_WHATSAPP_API_KEY || FAST2SMS_WHATSAPP_API_KEY === 'PASTE_YOUR_WHATSAPP_SPECIFIC_API_KEY_HERE') return;
+  if(!recipientNumber) return;
   const url = new URL('https://www.fast2sms.com/dev/whatsapp');
   url.searchParams.set('message_id', FAST2SMS_WHATSAPP_MESSAGE_ID);
   url.searchParams.set('phone_number_id', FAST2SMS_WHATSAPP_PHONE_NUMBER_ID);
-  url.searchParams.set('numbers', '91' + OWNER_NOTIFY_NUMBER);
+  url.searchParams.set('numbers', recipientNumber);
   url.searchParams.set('variables_values', messageText);
   // Query-param auth only — NOT a custom header. Fast2SMS's WhatsApp
   // server confirmed (via a real CORS preflight rejection) that it does
@@ -892,10 +893,23 @@ async function sendWhatsAppViaFast2SMS(messageText){
   try{
     const res = await fetch(url.toString(), { method:'GET' });
     const bodyText = await res.text().catch(()=> '(could not read response body)');
-    console.log('[fast2sms][whatsapp] HTTP', res.status, bodyText);
+    console.log('[fast2sms][whatsapp]', recipientNumber, 'HTTP', res.status, bodyText);
   }catch(err){
-    console.warn('[fast2sms][whatsapp] request failed to send (likely CORS/network block):', err);
+    console.warn('[fast2sms][whatsapp] request failed for', recipientNumber, '(likely CORS/network block):', err);
   }
+}
+
+// Turns whatever a customer typed into the mobile field (with or without
+// +91, spaces, dashes, a leading 0) into the bare 12-digit "91XXXXXXXXXX"
+// format Fast2SMS's WhatsApp API expects. Returns null if it doesn't look
+// like a plausible Indian mobile number, so we don't fire a doomed request.
+function normalizeIndianMobile(raw){
+  if(!raw) return null;
+  let digits = String(raw).replace(/\D/g, '');
+  if(digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1);
+  if(digits.length === 10) return '91' + digits;
+  if(digits.length === 12 && digits.startsWith('91')) return digits;
+  return null;
 }
 
 function notifyOwnerViaFast2SMS(order){
@@ -915,7 +929,17 @@ function notifyOwnerViaFast2SMS(order){
   // SMS notification disabled for now while we debug the WhatsApp call —
   // uncomment to re-enable (SMS itself was confirmed working).
   // sendSmsViaFast2SMS(smsMessage);
-  sendWhatsAppViaFast2SMS(whatsappMessage);
+
+  // Owner copy — always to the fixed business number.
+  sendWhatsAppViaFast2SMS(whatsappMessage, '91' + OWNER_NOTIFY_NUMBER);
+
+  // Customer copy — to whatever mobile number they typed at checkout.
+  const customerNumber = normalizeIndianMobile(order.customer.mobile);
+  if(customerNumber){
+    sendWhatsAppViaFast2SMS(whatsappMessage, customerNumber);
+  }else{
+    console.warn('[fast2sms][whatsapp] customer mobile did not look like a valid Indian number, skipped:', order.customer.mobile);
+  }
 }
 
 async function handleOrderSubmit(e){
