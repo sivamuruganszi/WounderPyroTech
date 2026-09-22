@@ -936,7 +936,8 @@ function notifyOwnerViaFast2SMS(order){
   }
   const customerSMS = customerWA.slice(2); // bare 10-digit, no '91' prefix — SMS route expects this format
 
-  sendSmsViaFast2SMS(smsMessage, customerSMS);
+  // SMS notification disabled — uncomment to re-enable.
+  // sendSmsViaFast2SMS(smsMessage, customerSMS);
   sendWhatsAppViaFast2SMS(whatsappMessage, customerWA);
 }
 
