@@ -883,7 +883,13 @@ async function sendWhatsAppViaFast2SMS(messageText, recipientNumber){
   url.searchParams.set('message_id', FAST2SMS_WHATSAPP_MESSAGE_ID);
   url.searchParams.set('phone_number_id', FAST2SMS_WHATSAPP_PHONE_NUMBER_ID);
   url.searchParams.set('numbers', recipientNumber);
-  url.searchParams.set('variables_values', messageText);
+  // Template 33839 has no variable placeholders — its text is fully fixed
+  // in the Fast2SMS panel, so variables_values is only sent when this
+  // function is called with actual text (keeps it reusable if a
+  // variable-based template is used again later).
+  if(messageText){
+    url.searchParams.set('variables_values', messageText);
+  }
   // Query-param auth only — NOT a custom header. Fast2SMS's WhatsApp
   // server confirmed (via a real CORS preflight rejection) that it does
   // not allow a browser to send a custom Authorization header. A plain
@@ -914,16 +920,7 @@ function normalizeIndianMobile(raw){
 }
 
 function notifyOwnerViaFast2SMS(order){
-  const totalFormatted = money(order.total);
   const smsMessage = `New order received! Total Rs.${Number(order.total||0).toLocaleString('en-IN')}. From ${order.customer.name||'Customer'} (${order.customer.mobile||'N/A'}).`.slice(0,160);
-  // The approved WhatsApp template ("Dear user, Your last payment
-  // completed successfully amount: {{1}}") was built for a short
-  // payment-confirmation amount, not a full order summary — sending our
-  // previous long, multi-field string into that single variable triggered
-  // Fast2SMS/Meta's "issue with the parameters in your template" error
-  // (#132018). Sending just the total now, to match what the template was
-  // actually approved for.
-  const whatsappMessage = totalFormatted;
 
   // Both SMS and WhatsApp now go to the customer's own number (whatever
   // they typed at checkout) — NOT to the fixed OWNER_NOTIFY_NUMBER, per
@@ -938,7 +935,9 @@ function notifyOwnerViaFast2SMS(order){
 
   // SMS notification disabled — uncomment to re-enable.
   // sendSmsViaFast2SMS(smsMessage, customerSMS);
-  sendWhatsAppViaFast2SMS(whatsappMessage, customerWA);
+
+  // Template 33839 has no variables — nothing to pass as message text.
+  sendWhatsAppViaFast2SMS(null, customerWA);
 }
 
 async function handleOrderSubmit(e){
