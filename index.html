@@ -90,15 +90,26 @@
   .catnav{position:sticky; top:var(--header-h, 64px); z-index:30; background:#fff; border-bottom:2px solid var(--line);}
   .catnav-inner{max-width:1200px; margin:0 auto; padding:10px 22px; display:flex; gap:8px; overflow-x:auto; scrollbar-width:none;}
   .catnav-inner::-webkit-scrollbar{display:none;}
-  .catnav a{white-space:nowrap; font-size:12.5px; padding:7px 14px; border-radius:999px; border:1.5px solid var(--magenta); color:var(--magenta); text-decoration:none; flex:0 0 auto; font-weight:600;}
-  .catnav a:hover{background:var(--magenta); color:#fff;}
+
+  /* Shared category-item structure: icon | divider line | name | count badge */
+  .cat-item{display:flex; align-items:center; gap:8px; text-decoration:none; font-weight:600; box-sizing:border-box;}
+  .ci-icon{font-size:15px; line-height:1; flex:0 0 auto;}
+  .ci-divider{width:1px; align-self:stretch; background:currentColor; opacity:.3; flex:0 0 auto;}
+  .ci-name{flex:1; min-width:0;}
+  .ci-count{font-size:10.5px; font-weight:800; padding:1px 7px; border-radius:999px; flex:0 0 auto;}
+
+  /* Horizontal pill bar (mobile) */
+  .catnav .cat-item{white-space:nowrap; font-size:12.5px; padding:7px 12px; border-radius:999px; border:1.5px solid var(--magenta); color:var(--magenta);}
+  .catnav .cat-item:hover{background:var(--magenta); color:#fff;}
+  .catnav .ci-count{background:rgba(142,26,107,.12); color:var(--magenta);}
+  .catnav .cat-item:hover .ci-count{background:rgba(255,255,255,.3); color:#fff;}
 
   .page-layout{max-width:1200px; margin:0 auto; padding:0 22px; display:flex; gap:28px; align-items:flex-start;}
   main{flex:1; min-width:0; padding:32px 0 90px; position:relative;}
 
   .cat-sidebar{
     display:none; /* shown only on wider screens — see media query below */
-    flex:0 0 230px;
+    flex:0 0 240px;
     position:sticky;
     top:calc(var(--header-h, 64px) + 16px);
     max-height:calc(100vh - var(--header-h, 64px) - 32px);
@@ -110,11 +121,12 @@
     margin-top:32px;
   }
   .cat-sidebar-title{font-size:11.5px; text-transform:uppercase; letter-spacing:.5px; color:#8a7aa0; font-weight:700; margin:0 0 10px 6px;}
-  .cat-sidebar a{
-    display:block; padding:9px 12px; border-radius:8px; font-size:13.5px; font-weight:600;
-    color:var(--ink); text-decoration:none; margin-bottom:3px; border:1.5px solid transparent;
-  }
-  .cat-sidebar a:hover{background:#fbf4ff; border-color:var(--magenta); color:var(--magenta);}
+
+  /* Sidebar list (desktop) — bordered box per category, clearly divided */
+  .cat-sidebar .cat-item{padding:10px 12px; border-radius:8px; font-size:13.5px; color:var(--ink); border:1.5px solid var(--line); margin-bottom:8px;}
+  .cat-sidebar .cat-item:hover{background:#fbf4ff; border-color:var(--magenta); color:var(--magenta);}
+  .cat-sidebar .ci-count{background:#f4ecd8; color:#8a7aa0;}
+  .cat-sidebar .cat-item:hover .ci-count{background:rgba(142,26,107,.12); color:var(--magenta);}
 
   @media (min-width:901px){
     .cat-sidebar{display:block;}
@@ -707,10 +719,36 @@ function categories(){
 }
 function slug(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-'); }
 
+// Icon shown per category — falls back to a generic cracker icon for any
+// new category an admin adds that isn't in this list.
+const CATEGORY_ICONS = {
+  'Sparklers Product': '🎇',
+  'One Sound Crackers': '💥',
+  'Flower Pots Fountain': '⛲',
+  'Ground Chakkars & Fancy Chakkars': '🌀',
+  'Novelties': '🎉',
+  '2" Fancy Products Sky Display': '🎆',
+  '2½" Fancy Products Sky Display': '🎆',
+  '3" Fancy Products Sky Display': '🎆',
+  '4" Fancy Products Sky Display': '🎆',
+  '5" Fancy Products Sky Display': '🎆',
+  'Repeating Shots Sky Display': '🌟',
+};
+function categoryIcon(c){ return CATEGORY_ICONS[c] || '🧨'; }
+
 function renderCatNav(){
-  const links = categories().map(c => `<a href="#cat-${slug(c)}">${c}</a>`).join('');
-  document.getElementById('catNavInner').innerHTML = links;
-  document.getElementById('catSidebar').innerHTML = '<div class="cat-sidebar-title">Categories</div>' + links;
+  const items = categories().map(c=>{
+    const count = PRODUCTS.filter(p=>p.category===c).length;
+    return `
+    <a href="#cat-${slug(c)}" class="cat-item">
+      <span class="ci-icon">${categoryIcon(c)}</span>
+      <span class="ci-divider"></span>
+      <span class="ci-name">${c}</span>
+      <span class="ci-count">${count}</span>
+    </a>`;
+  }).join('');
+  document.getElementById('catNavInner').innerHTML = items;
+  document.getElementById('catSidebar').innerHTML = '<div class="cat-sidebar-title">Categories</div>' + items;
 }
 
 function rowHtml(p){
