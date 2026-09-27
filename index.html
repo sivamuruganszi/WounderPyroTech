@@ -1429,7 +1429,7 @@ async function handleDeleteCategory(name){
 document.getElementById('editImgDrop').addEventListener('click', ()=>document.getElementById('editImgInput').click());
 document.getElementById('editImgInput').addEventListener('change', (e)=>{
   const file = e.target.files[0]; if(!file) return;
-  resizeImageToDataUrl(file, 480, 0.6).then(dataUrl=>{
+  resizeImageToDataUrl(file, 900, 0.8).then(dataUrl=>{
     pendingEditImageDataUrl = dataUrl;
     const preview = document.getElementById('editImgPreview');
     preview.src = dataUrl; preview.style.display = 'block';
