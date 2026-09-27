@@ -1222,7 +1222,7 @@ function setupImageUpload(){
   drop.addEventListener('click', ()=>input.click());
   input.addEventListener('change', (e)=>{
     const file = e.target.files[0]; if(!file) return;
-    resizeImageToDataUrl(file, 900, 0.8).then(dataUrl=>{
+    resizeImageToDataUrl(file, 1200, 0.8).then(dataUrl=>{
       pendingImageDataUrl = dataUrl;
       const preview = document.getElementById('imgPreview');
       preview.src = dataUrl; preview.style.display = 'block';
@@ -1429,7 +1429,7 @@ async function handleDeleteCategory(name){
 document.getElementById('editImgDrop').addEventListener('click', ()=>document.getElementById('editImgInput').click());
 document.getElementById('editImgInput').addEventListener('change', (e)=>{
   const file = e.target.files[0]; if(!file) return;
-  resizeImageToDataUrl(file, 900, 0.8).then(dataUrl=>{
+  resizeImageToDataUrl(file, 1200, 0.8).then(dataUrl=>{
     pendingEditImageDataUrl = dataUrl;
     const preview = document.getElementById('editImgPreview');
     preview.src = dataUrl; preview.style.display = 'block';
