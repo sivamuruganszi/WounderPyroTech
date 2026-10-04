@@ -374,6 +374,17 @@
     table.price-table tbody{display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); column-gap:12px; align-items:start;}
     tr.cat-divider{grid-column:1 / -1;}
   }
+
+  /* ---------- payment QR card (empty cart + order-placed popup) ---------- */
+  .pay-qr-card{background:#fff; border:2px solid var(--magenta); border-radius:14px; padding:14px 14px 16px; margin-top:12px; text-align:center;}
+  .pay-qr-title{font-size:16px; font-weight:800; color:var(--magenta);}
+  .pay-qr-amount{margin-top:6px; font-size:14px; font-weight:700; color:var(--ink);}
+  .pay-qr-amount b{font-size:20px; color:var(--green-dark);}
+  .pay-qr-img{display:block; width:min(240px, 100%); height:auto; aspect-ratio:1 / 1; margin:10px auto 8px; background:#fff;}
+  .pay-qr-note{font-size:12px; color:#6b6385; line-height:1.45;}
+  .pay-qr-missing{margin:12px 0; padding:14px; border:1.5px dashed var(--red); border-radius:10px; color:var(--red-dark); font-size:13px; font-weight:600; line-height:1.4;}
+  #cartItemsWrap .empty-note{padding:14px 0 2px;}
+  #orderSuccessMsg .pay-qr-card{text-align:center;}
 </style>
 </head>
 <body>
@@ -998,9 +1009,40 @@ function syncCartDrawerItem(id){
 function updateCartBadge(){
   const count = Object.values(CART).reduce((a,b)=>a+b,0);
   document.getElementById('cartCount').textContent = count;
+  if(count > 0) prefetchPayQr();
   const ctaTotal = document.getElementById('checkoutCtaTotal');
   if(ctaTotal) ctaTotal.textContent = money(cartTotal());
   updateMobileBar();
+}
+
+// ---------- payment QR ----------
+// UPI QR for paying Wonder Pyrotech (file: payment-qr.png, same folder as index.html).
+// Shown (a) in the cart when it is empty and (b) in the "order placed" popup, together
+// with the amount to pay. The QR has no amount built in, so the customer enters it.
+function payQrCardHtml(amount){
+  const hasAmount = amount !== undefined && amount !== null;
+  return `
+  <div class="pay-qr-card">
+    <div class="pay-qr-title">📲 Pay through QR code</div>
+    ${hasAmount ? `<div class="pay-qr-amount">Amount to pay: <b>${money(amount)}</b></div>` : ''}
+    <img class="pay-qr-img" src="payment-qr.png" alt="UPI payment QR code for Wonder Pyrotech" width="240" height="240" onerror="payQrFailed(this)">
+    <div class="pay-qr-note">Scan with any UPI app (GPay, PhonePe, Paytm, BHIM…)${hasAmount ? ` and enter ${money(amount)}.` : '.'}</div>
+  </div>`;
+}
+// If payment-qr.png is missing/blocked, say so instead of showing a broken-image icon.
+function payQrFailed(img){
+  const d = document.createElement('div');
+  d.className = 'pay-qr-missing';
+  d.textContent = 'The QR code could not be loaded. Please call 77084 50260 to pay.';
+  img.replaceWith(d);
+}
+// Warm the browser cache the first time something is added to the cart, so the QR
+// appears instantly after the order is submitted (even on a slow mobile connection).
+let _payQrPrefetched = false;
+function prefetchPayQr(){
+  if(_payQrPrefetched) return;
+  _payQrPrefetched = true;
+  new Image().src = 'payment-qr.png';
 }
 
 // ---------- cart drawer ----------
@@ -1014,7 +1056,7 @@ function renderCartDrawer(){
   const footer = document.getElementById('cartFooter');
   const ids = Object.keys(CART);
   if(ids.length === 0){
-    itemsWrap.innerHTML = `<div class="empty-note">Your box is empty. Enter quantities in the price list to add items!</div>`;
+    itemsWrap.innerHTML = `<div class="empty-note">Your box is empty. Enter quantities in the price list to add items!</div>` + payQrCardHtml();
     footer.innerHTML = ''; return;
   }
   itemsWrap.innerHTML = ids.map(id=>{
@@ -1191,7 +1233,7 @@ async function handleOrderSubmit(e){
     // drawer — the drawer is about to be empty anyway since the cart was
     // just cleared.
     closeCart();
-    openOrderSuccess(order.customer.mobile);
+    openOrderSuccess(order.customer.mobile, order.total);
   }catch(err){
     console.error(err);
     msgBox.innerHTML = `<div class="error-box">Something went wrong saving your order. Please try again.</div>`;
@@ -1221,8 +1263,9 @@ document.getElementById('closeCartBtn').addEventListener('click', closeCart);
 document.getElementById('cartOverlay').addEventListener('click', (e)=>{ if(e.target.id==='cartOverlay') closeCart(); });
 
 // ---------- order placed confirmation popup ----------
-function openOrderSuccess(mobile){
-  document.getElementById('orderSuccessMsg').innerHTML = `We'll contact you shortly on <b>${mobile}</b> to confirm.`;
+function openOrderSuccess(mobile, total){
+  document.getElementById('orderSuccessMsg').innerHTML =
+    `We'll contact you shortly on <b>${mobile}</b> to confirm.` + payQrCardHtml(total);
   document.getElementById('orderSuccessOverlay').classList.add('open');
   lockBodyScroll();
 }
